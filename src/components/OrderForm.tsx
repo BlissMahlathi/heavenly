@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 const PIE_PRICE = 30;
+const TRANSFER_FEE = 2;
 
 // Function to send WhatsApp message to admin
 const sendWhatsAppNotification = (order: {
@@ -170,9 +171,11 @@ export const OrderForm = () => {
   });
 
   const totalPrice = quantity * PIE_PRICE;
+  const transferFee = formData.paymentMethod === "eft" ? TRANSFER_FEE : 0;
+  const finalTotal = totalPrice + transferFee;
   const calculatedChange =
     changeNeeded && formData.customerAmount
-      ? Number(formData.customerAmount) - totalPrice
+      ? Number(formData.customerAmount) - finalTotal
       : 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -203,7 +206,7 @@ export const OrderForm = () => {
       customer_phone: formData.phone,
       customer_email: formData.email || null,
       quantity,
-      total_price: totalPrice,
+      total_price: finalTotal,
       delivery_address: formData.address,
       payment_method: formData.paymentMethod,
       change_needed: changeNeeded,
@@ -327,6 +330,11 @@ export const OrderForm = () => {
                     <div className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
                       R{totalPrice}
                     </div>
+                    {formData.paymentMethod === "eft" && (
+                      <div className="text-xs sm:text-sm text-muted-foreground font-medium mt-1">
+                        + R{TRANSFER_FEE} transfer fee = R{finalTotal}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -447,10 +455,72 @@ export const OrderForm = () => {
                       htmlFor="eft"
                       className="cursor-pointer font-semibold flex-1"
                     >
-                      EFT/PayShap
+                      EFT/PayShap (+ R2 fee)
                     </Label>
                   </div>
                 </RadioGroup>
+
+                {formData.paymentMethod === "eft" && (
+                  <div className="space-y-4 p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 rounded-2xl border-2 border-blue-300 dark:border-blue-700 animate-fade-in shadow-lg">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center">
+                        <span className="text-white font-bold text-lg">💳</span>
+                      </div>
+                      <h4 className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                        Banking Details
+                      </h4>
+                    </div>
+
+                    <div className="space-y-3 bg-white/60 dark:bg-gray-900/40 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <div className="grid grid-cols-2 gap-2">
+                        <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                          Bank:
+                        </p>
+                        <p className="text-sm font-bold text-blue-900 dark:text-blue-100">
+                          Capitec
+                        </p>
+
+                        <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                          Account Number:
+                        </p>
+                        <p className="text-base font-mono font-bold text-blue-900 dark:text-blue-100 select-all">
+                          2104929241
+                        </p>
+
+                        <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                          Account Holder:
+                        </p>
+                        <p className="text-sm font-bold text-blue-900 dark:text-blue-100">
+                          0663621868
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-300 dark:border-amber-700 p-4 rounded-xl">
+                      <div className="flex items-start gap-2">
+                        <span className="text-xl">⚠️</span>
+                        <div className="flex-1">
+                          <p className="text-sm font-bold text-amber-900 dark:text-amber-100 mb-2">
+                            Important Payment Instructions:
+                          </p>
+                          <ul className="text-xs space-y-1 text-amber-800 dark:text-amber-200">
+                            <li>
+                              • Transfer{" "}
+                              <span className="font-bold">R{finalTotal}</span>{" "}
+                              (includes R2 transfer fee)
+                            </li>
+                            <li>• Use your phone number as reference</li>
+                            <li>• Send proof of payment via WhatsApp</li>
+                            <li>
+                              • Order will be confirmed after payment
+                              verification
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {formData.paymentMethod === "cash" && (
                   <div className="space-y-4 p-6 bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl border-2 border-accent/30 animate-fade-in">
@@ -487,7 +557,7 @@ export const OrderForm = () => {
                               customerAmount: e.target.value,
                             })
                           }
-                          min={totalPrice}
+                          min={finalTotal}
                           className="h-12 border-2 border-accent/30 focus:border-accent"
                         />
                         {formData.customerAmount && calculatedChange >= 0 && (
@@ -533,7 +603,7 @@ export const OrderForm = () => {
                 className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 text-primary-foreground font-extrabold text-base sm:text-lg lg:text-xl h-14 sm:h-15 lg:h-16 shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-[1.02] rounded-xl"
               >
                 <ShoppingCart className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7" />
-                Place Order - R{totalPrice}
+                Place Order - R{finalTotal}
               </Button>
             </form>
           </CardContent>
@@ -605,6 +675,11 @@ export const OrderForm = () => {
                       <p className="font-semibold text-xl text-primary">
                         R{pendingOrderData.total_price}
                       </p>
+                      {pendingOrderData.payment_method === "eft" && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          (Includes R{TRANSFER_FEE} transfer fee)
+                        </p>
+                      )}
                     </div>
                   </div>
 
