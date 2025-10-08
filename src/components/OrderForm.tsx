@@ -471,7 +471,36 @@ export const OrderForm = () => {
                       </h4>
                     </div>
 
+                    {/* Capitec Users - Quick Pay */}
+                    <div className="space-y-3 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 p-4 rounded-lg border-2 border-green-300 dark:border-green-700">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-2xl">✨</span>
+                        <p className="text-sm font-bold text-green-900 dark:text-green-100">
+                          Capitec Users - Instant Payment
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <p className="text-sm font-semibold text-green-800 dark:text-green-200">
+                          Pay to Number:
+                        </p>
+                        <p className="text-base font-mono font-bold text-green-900 dark:text-green-100 select-all">
+                          0663621868
+                        </p>
+
+                        <p className="text-sm font-semibold text-green-800 dark:text-green-200">
+                          Reference:
+                        </p>
+                        <p className="text-sm font-bold text-green-900 dark:text-green-100">
+                          Pies
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Other Banks */}
                     <div className="space-y-3 bg-white/60 dark:bg-gray-900/40 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-2">
+                        Other Banks - Use Account Details:
+                      </p>
                       <div className="grid grid-cols-2 gap-2">
                         <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">
                           Bank:
@@ -493,6 +522,13 @@ export const OrderForm = () => {
                         <p className="text-sm font-bold text-blue-900 dark:text-blue-100">
                           0663621868
                         </p>
+
+                        <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                          Reference:
+                        </p>
+                        <p className="text-sm font-bold text-blue-900 dark:text-blue-100">
+                          Pies
+                        </p>
                       </div>
                     </div>
 
@@ -509,7 +545,14 @@ export const OrderForm = () => {
                               <span className="font-bold">R{finalTotal}</span>{" "}
                               (includes R2 transfer fee)
                             </li>
-                            <li>• Use your phone number as reference</li>
+                            <li>
+                              • <strong>Capitec users:</strong> Pay to
+                              0663621868 with reference "Pies"
+                            </li>
+                            <li>
+                              • <strong>Other banks:</strong> Use account number
+                              2104929241
+                            </li>
                             <li>• Send proof of payment via WhatsApp</li>
                             <li>
                               • Order will be confirmed after payment
