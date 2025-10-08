@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supabase Connection Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .test-box {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      button {
+        background: #3b82f6;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background: #2563eb;
+      }
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+      pre {
+        background: #f9f9f9;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🔍 Supabase Connection Test</h1>
+
+    <div class="test-box">
+      <h2>Environment Variables</h2>
+      <div id="env-check"></div>
+    </div>
+
+    <div class="test-box">
+      <h2>Test Order Insert</h2>
+      <button onclick="testOrderInsert()">Test Insert Order</button>
+      <div id="insert-result"></div>
+    </div>
+
+    <script type="module">
+      // Import Supabase client
+      import { supabase } from "/src/integrations/supabase/client.ts";
+
+      // Check environment variables
+      const envCheck = document.getElementById("env-check");
+      const url = import.meta.env.VITE_SUPABASE_URL;
+      const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+      envCheck.innerHTML = `
+            <p><strong>URL:</strong> <span class="${
+              url ? "success" : "error"
+            }">${url || "❌ Missing!"}</span></p>
+            <p><strong>Key:</strong> <span class="${
+              key ? "success" : "error"
+            }">${
+        key
+          ? "✅ Set (first 20 chars): " + key.substring(0, 20) + "..."
+          : "❌ Missing!"
+      }</span></p>
+        `;
+
+      // Test insert function
+      window.testOrderInsert = async function () {
+        const resultDiv = document.getElementById("insert-result");
+        resultDiv.innerHTML = "<p>⏳ Testing insert...</p>";
+
+        try {
+          const testOrder = {
+            customer_name: "Test Customer",
+            customer_phone: "0123456789",
+            customer_email: "test@example.com",
+            quantity: 1,
+            total_price: 30.0,
+            delivery_address: "123 Test Street",
+            payment_method: "cash",
+            change_needed: false,
+            customer_amount: null,
+            calculated_change: null,
+            special_notes: "This is a test order",
+            status: "pending",
+          };
+
+          const { data, error } = await supabase
+            .from("orders")
+            .insert(testOrder)
+            .select()
+            .single();
+
+          if (error) {
+            resultDiv.innerHTML = `
+                        <p class="error">❌ Insert Failed!</p>
+                        <pre>${JSON.stringify(error, null, 2)}</pre>
+                    `;
+          } else {
+            resultDiv.innerHTML = `
+                        <p class="success">✅ Insert Successful!</p>
+                        <p><strong>Order ID:</strong> ${data.id}</p>
+                        <p><strong>Order Number:</strong> #${data.id
+                          .slice(0, 8)
+                          .toUpperCase()}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+          }
+        } catch (err) {
+          resultDiv.innerHTML = `
+                    <p class="error">❌ Exception!</p>
+                    <pre>${err.message || err}</pre>
+                `;
+        }
+      };
+    </script>
+  </body>
+</html>

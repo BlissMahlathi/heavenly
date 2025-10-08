@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 45 50% 98%;
+    --foreground: 20 30% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 20 30% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 30% 12%;
+
+    --primary: 25 80% 35%;
+    --primary-foreground: 45 100% 98%;
+
+    --secondary: 30 70% 48%;
+    --secondary-foreground: 45 100% 98%;
+
+    --muted: 45 35% 92%;
+    --muted-foreground: 20 20% 42%;
+
+    --accent: 45 100% 52%;
+    --accent-foreground: 20 30% 12%;
+
+    --destructive: 0 75% 52%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 70% 42%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 45 25% 88%;
+    --input: 45 25% 88%;
+    --ring: 25 80% 35%;
+
+    --radius: 0.75rem;
+
+    --gradient-warm: linear-gradient(
+      135deg,
+      hsl(25 80% 35%) 0%,
+      hsl(30 70% 48%) 100%
+    );
+    --gradient-gold: linear-gradient(
+      135deg,
+      hsl(45 100% 52%) 0%,
+      hsl(35 100% 58%) 100%
+    );
+    --gradient-subtle: linear-gradient(
+      180deg,
+      hsl(45 50% 98%) 0%,
+      hsl(45 35% 92%) 100%
+    );
+    --shadow-warm: 0 12px 35px -12px hsl(25 80% 35% / 0.35);
+    --shadow-glow: 0 0 50px hsl(45 100% 52% / 0.25);
+    --shadow-card: 0 8px 24px -8px hsl(20 30% 12% / 0.12);
+
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 20 25% 10%;
+    --foreground: 45 50% 95%;
+
+    --card: 20 20% 15%;
+    --card-foreground: 45 50% 95%;
+
+    --popover: 20 20% 15%;
+    --popover-foreground: 45 50% 95%;
+
+    --primary: 45 100% 50%;
+    --primary-foreground: 20 25% 15%;
+
+    --secondary: 25 60% 45%;
+    --secondary-foreground: 45 100% 95%;
+
+    --muted: 20 15% 25%;
+    --muted-foreground: 45 20% 65%;
+
+    --accent: 45 100% 50%;
+    --accent-foreground: 20 25% 15%;
+
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 120 50% 40%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 20 15% 25%;
+    --input: 20 15% 25%;
+    --ring: 45 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
+.animate-fade-in-delay {
+  animation: fade-in 0.6s ease-out 0.2s backwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.8s ease-out;
+}
+
+.animate-slide-up-delay {
+  animation: slide-up 0.8s ease-out 0.3s backwards;
+}
+
+.animate-slide-up-delay-2 {
+  animation: slide-up 0.8s ease-out 0.6s backwards;
+}
+
+.animate-slide-down {
+  animation: slide-down 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.5s ease-out;
+}
+
+/* Hero Background Animation */
+.hero-bg {
+  animation: subtle-zoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes subtle-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--primary)),
+    hsl(var(--secondary))
+  );
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--secondary)),
+    hsl(var(--primary))
+  );
+}

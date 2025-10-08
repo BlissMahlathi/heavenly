@@ -1,0 +1,671 @@
+import { useState } from "react";
+import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+const PIE_PRICE = 30;
+
+// Function to send WhatsApp message to admin
+const sendWhatsAppNotification = (order: {
+  id: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string | null;
+  quantity: number;
+  total_price: number;
+  delivery_address: string;
+  payment_method: string;
+  change_needed: boolean;
+  customer_amount: number | null;
+  calculated_change: number | null;
+  special_notes: string | null;
+}) => {
+  // Your admin WhatsApp number (replace with actual number, e.g., '27663621868' for +27 66 362 1868)
+  const adminWhatsAppNumber = "27663621868"; // Change this to your actual number
+
+  const changeInfo = order.change_needed
+    ? `Customer paying with: R${order.customer_amount} | Change needed: R${order.calculated_change}`
+    : "No change needed";
+
+  const message = `🔔 NEW PIE ORDER!
+
+📋 ORDER #${order.id.slice(0, 8).toUpperCase()}
+
+👤 Customer: ${order.customer_name}
+📞 Phone: ${order.customer_phone}
+${order.customer_email ? `📧 Email: ${order.customer_email}` : ""}
+
+🥧 Quantity: ${order.quantity} pie(s)
+💵 Total: R${order.total_price}
+
+📍 Delivery Address:
+${order.delivery_address}
+
+💳 Payment: ${
+    order.payment_method === "cash" ? "Cash on Delivery" : "EFT/PayShap"
+  }
+${changeInfo}
+
+${order.special_notes ? `📝 Notes: ${order.special_notes}` : ""}`;
+
+  // Open WhatsApp with pre-filled message
+  const whatsappUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(
+    message
+  )}`;
+  window.open(whatsappUrl, "_blank");
+};
+
+// Function to send notification to admin
+const sendAdminNotification = async (order: {
+  id: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string | null;
+  quantity: number;
+  total_price: number;
+  delivery_address: string;
+  payment_method: string;
+  change_needed: boolean;
+  customer_amount: number | null;
+  calculated_change: number | null;
+  special_notes: string | null;
+}) => {
+  try {
+    // Create a detailed notification message
+    const changeInfo = order.change_needed
+      ? `\n💵 Customer paying with: R${order.customer_amount}\n💰 Change needed: R${order.calculated_change}`
+      : "\n✅ No change needed";
+
+    const notificationMessage = `
+🔔 NEW PIE ORDER RECEIVED!
+
+� ORDER #${order.id.slice(0, 8).toUpperCase()}
+
+�👤 Customer: ${order.customer_name}
+📞 Phone: ${order.customer_phone}
+${order.customer_email ? `📧 Email: ${order.customer_email}` : ""}
+
+🥧 Quantity: ${order.quantity} pie(s)
+💵 Total: R${order.total_price}
+
+📍 Delivery Address:
+${order.delivery_address}
+
+💳 Payment Method: ${
+      order.payment_method === "cash" ? "Cash on Delivery" : "EFT/PayShap"
+    }${changeInfo}
+
+${order.special_notes ? `📝 Special Instructions:\n${order.special_notes}` : ""}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Full Order ID: ${order.id}
+`;
+
+    // Store notification in database for admin to see
+    await supabase.from("admin_notifications").insert({
+      order_id: order.id,
+      message: notificationMessage,
+      is_read: false,
+    });
+
+    // You can also integrate with email service here
+    // For example, using Supabase Edge Functions or third-party email service
+
+    console.log("Admin notification sent:", notificationMessage);
+  } catch (error) {
+    console.error("Error sending admin notification:", error);
+    // Don't throw error - notification failure shouldn't stop order placement
+  }
+};
+
+export const OrderForm = () => {
+  const [quantity, setQuantity] = useState(1);
+  const [changeNeeded, setChangeNeeded] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingOrderData, setPendingOrderData] = useState<{
+    customer_name: string;
+    customer_phone: string;
+    customer_email: string | null;
+    quantity: number;
+    total_price: number;
+    delivery_address: string;
+    payment_method: string;
+    change_needed: boolean;
+    customer_amount: number | null;
+    calculated_change: number | null;
+    special_notes: string | null;
+    status: string;
+  } | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    paymentMethod: "cash",
+    customerAmount: "",
+    notes: "",
+  });
+
+  const totalPrice = quantity * PIE_PRICE;
+  const calculatedChange =
+    changeNeeded && formData.customerAmount
+      ? Number(formData.customerAmount) - totalPrice
+      : 0;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.phone || !formData.address) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (
+      formData.paymentMethod === "cash" &&
+      changeNeeded &&
+      !formData.customerAmount
+    ) {
+      toast.error("Please specify the amount you're paying with");
+      return;
+    }
+
+    if (changeNeeded && calculatedChange < 0) {
+      toast.error("The amount you're paying is less than the total");
+      return;
+    }
+
+    // Prepare order data for confirmation
+    const orderData = {
+      customer_name: formData.name,
+      customer_phone: formData.phone,
+      customer_email: formData.email || null,
+      quantity,
+      total_price: totalPrice,
+      delivery_address: formData.address,
+      payment_method: formData.paymentMethod,
+      change_needed: changeNeeded,
+      customer_amount: changeNeeded ? Number(formData.customerAmount) : null,
+      calculated_change: changeNeeded ? calculatedChange : null,
+      special_notes: formData.notes || null,
+      status: "pending",
+    };
+
+    // Show confirmation dialog instead of submitting immediately
+    setPendingOrderData(orderData);
+    setShowConfirmDialog(true);
+  };
+
+  const confirmAndSubmitOrder = async () => {
+    if (!pendingOrderData) return;
+
+    try {
+      const { data: newOrder, error } = await supabase
+        .from("orders")
+        .insert(pendingOrderData)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Send notification to admin database
+      if (newOrder) {
+        await sendAdminNotification(newOrder);
+
+        // Send WhatsApp notification
+        sendWhatsAppNotification(newOrder);
+      }
+
+      // Show order number to customer
+      const orderNumber = newOrder?.id.slice(0, 8).toUpperCase() || "";
+
+      toast.success("Order placed successfully!", {
+        description: `Order #${orderNumber} - ${pendingOrderData.quantity} pie(s) for R${pendingOrderData.total_price}. Check WhatsApp for confirmation!`,
+        duration: 6000,
+      });
+
+      // Reset form and close dialog
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        address: "",
+        paymentMethod: "cash",
+        customerAmount: "",
+        notes: "",
+      });
+      setQuantity(1);
+      setChangeNeeded(false);
+      setShowConfirmDialog(false);
+      setPendingOrderData(null);
+    } catch (error) {
+      toast.error("Failed to place order", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred",
+      });
+      setShowConfirmDialog(false);
+    }
+  };
+
+  return (
+    <section
+      id="order-section"
+      className="py-20 bg-gradient-to-b from-background via-muted/10 to-background"
+    >
+      <div className="container mx-auto px-4">
+        <Card className="max-w-3xl mx-auto shadow-2xl border-2 border-primary/20 animate-fade-in overflow-hidden">
+          <CardHeader className="bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 border-b border-primary/10 py-8">
+            <CardTitle className="text-4xl font-extrabold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+              Place Your Order
+            </CardTitle>
+            <CardDescription className="text-base text-muted-foreground font-medium mt-2">
+              Fill in the details below to order your delicious pies
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-8 pb-8 px-6 md:px-10">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Quantity Selector */}
+              <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 p-8 rounded-2xl border-2 border-primary/20 shadow-inner">
+                <Label className="text-xl font-bold mb-6 block text-foreground">
+                  Select Quantity
+                </Label>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="h-14 w-14 hover:scale-110 transition-transform border-2 border-primary/30 hover:border-primary hover:bg-primary/10"
+                    >
+                      <Minus className="h-6 w-6" />
+                    </Button>
+                    <span className="text-5xl font-extrabold w-24 text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                      {quantity}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="h-14 w-14 hover:scale-110 transition-transform border-2 border-primary/30 hover:border-primary hover:bg-primary/10"
+                    >
+                      <Plus className="h-6 w-6" />
+                    </Button>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-muted-foreground font-semibold uppercase tracking-wider mb-1">
+                      Total Price
+                    </div>
+                    <div className="text-5xl font-extrabold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                      R{totalPrice}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact Information */}
+              <div className="space-y-5">
+                <h3 className="text-lg font-bold text-foreground mb-4">
+                  Contact Information
+                </h3>
+                <div>
+                  <Label
+                    htmlFor="name"
+                    className="text-sm font-semibold text-foreground mb-2 block"
+                  >
+                    Full Name *
+                  </Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
+                    placeholder="Dree pies"
+                    required
+                    className="h-13 border-2 border-primary/20 focus:border-primary transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <Label
+                    htmlFor="phone"
+                    className="text-sm font-semibold text-foreground mb-2 block"
+                  >
+                    WhatsApp Number *
+                  </Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
+                    placeholder="066 362 1868"
+                    required
+                    className="h-13 border-2 border-primary/20 focus:border-primary transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <Label
+                    htmlFor="email"
+                    className="text-sm font-semibold text-foreground mb-2 block"
+                  >
+                    Email (Optional)
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    placeholder="pies@example.com"
+                    className="h-13 border-2 border-primary/20 focus:border-primary transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Delivery Address */}
+              <div>
+                <Label
+                  htmlFor="address"
+                  className="text-sm font-semibold text-foreground mb-2 block"
+                >
+                  Delivery Address *
+                </Label>
+                <Textarea
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) =>
+                    setFormData({ ...formData, address: e.target.value })
+                  }
+                  placeholder="RES"
+                  required
+                  rows={3}
+                  className="resize-none border-2 border-primary/20 focus:border-primary transition-colors"
+                />
+              </div>
+
+              {/* Payment Method */}
+              <div className="space-y-4">
+                <Label className="text-lg font-bold text-foreground block">
+                  Payment Method *
+                </Label>
+                <RadioGroup
+                  value={formData.paymentMethod}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, paymentMethod: value })
+                  }
+                  className="space-y-3"
+                >
+                  <div className="flex items-center space-x-3 bg-gradient-to-r from-muted/80 to-muted/50 p-4 rounded-xl border-2 border-primary/20 hover:border-primary/40 transition-colors cursor-pointer">
+                    <RadioGroupItem
+                      value="cash"
+                      id="cash"
+                      className="h-5 w-5"
+                    />
+                    <Label
+                      htmlFor="cash"
+                      className="cursor-pointer font-semibold flex-1"
+                    >
+                      Cash on Delivery
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-3 bg-gradient-to-r from-muted/80 to-muted/50 p-4 rounded-xl border-2 border-primary/20 hover:border-primary/40 transition-colors cursor-pointer">
+                    <RadioGroupItem value="eft" id="eft" className="h-5 w-5" />
+                    <Label
+                      htmlFor="eft"
+                      className="cursor-pointer font-semibold flex-1"
+                    >
+                      EFT/PayShap
+                    </Label>
+                  </div>
+                </RadioGroup>
+
+                {formData.paymentMethod === "cash" && (
+                  <div className="space-y-4 p-6 bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl border-2 border-accent/30 animate-fade-in">
+                    <div className="flex items-center justify-between">
+                      <Label
+                        htmlFor="changeNeeded"
+                        className="text-base font-bold"
+                      >
+                        Do you need change?
+                      </Label>
+                      <Switch
+                        id="changeNeeded"
+                        checked={changeNeeded}
+                        onCheckedChange={setChangeNeeded}
+                      />
+                    </div>
+
+                    {changeNeeded && (
+                      <div className="space-y-3 animate-fade-in">
+                        <Label
+                          htmlFor="customerAmount"
+                          className="text-sm font-semibold"
+                        >
+                          Amount you're paying with (R)
+                        </Label>
+                        <Input
+                          id="customerAmount"
+                          type="number"
+                          placeholder="e.g., 50"
+                          value={formData.customerAmount}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              customerAmount: e.target.value,
+                            })
+                          }
+                          min={totalPrice}
+                          className="h-12 border-2 border-accent/30 focus:border-accent"
+                        />
+                        {formData.customerAmount && calculatedChange >= 0 && (
+                          <div className="bg-green-50 dark:bg-green-950/30 border-2 border-green-200 dark:border-green-800 p-4 rounded-xl animate-fade-in">
+                            <p className="text-sm font-bold text-green-800 dark:text-green-200">
+                              Your change:{" "}
+                              <span className="text-2xl">
+                                R{calculatedChange.toFixed(2)}
+                              </span>
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Special Notes */}
+              <div>
+                <Label
+                  htmlFor="notes"
+                  className="text-sm font-semibold text-foreground mb-2 block"
+                >
+                  Special Instructions (Optional)
+                </Label>
+                <Textarea
+                  id="notes"
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  placeholder="Any special delivery instructions or requests..."
+                  rows={3}
+                  className="resize-none border-2 border-primary/20 focus:border-primary transition-colors"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 text-primary-foreground font-extrabold text-xl h-16 shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-[1.02] rounded-xl"
+              >
+                <ShoppingCart className="mr-3 h-7 w-7" />
+                Place Order - R{totalPrice}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Confirmation Dialog */}
+        <AlertDialog
+          open={showConfirmDialog}
+          onOpenChange={setShowConfirmDialog}
+        >
+          <AlertDialogContent className="max-w-2xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-2xl font-bold">
+                Confirm Your Order
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-base">
+                Please review your order details before confirming
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            {pendingOrderData && (
+              <div className="space-y-4 py-4">
+                <div className="bg-gradient-to-br from-primary/10 to-accent/10 p-6 rounded-lg space-y-3">
+                  <h3 className="font-bold text-lg border-b pb-2">
+                    Order Summary
+                  </h3>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Name</p>
+                      <p className="font-semibold">
+                        {pendingOrderData.customer_name}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-muted-foreground">Phone</p>
+                      <p className="font-semibold">
+                        {pendingOrderData.customer_phone}
+                      </p>
+                    </div>
+
+                    {pendingOrderData.customer_email && (
+                      <div className="col-span-2">
+                        <p className="text-sm text-muted-foreground">Email</p>
+                        <p className="font-semibold">
+                          {pendingOrderData.customer_email}
+                        </p>
+                      </div>
+                    )}
+
+                    <div>
+                      <p className="text-sm text-muted-foreground">Quantity</p>
+                      <p className="font-semibold text-xl">
+                        {pendingOrderData.quantity} pie(s)
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-muted-foreground">
+                        Total Price
+                      </p>
+                      <p className="font-semibold text-xl text-primary">
+                        R{pendingOrderData.total_price}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t">
+                    <p className="text-sm text-muted-foreground">
+                      Delivery Address
+                    </p>
+                    <p className="font-semibold">
+                      {pendingOrderData.delivery_address}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Payment Method
+                    </p>
+                    <p className="font-semibold">
+                      {pendingOrderData.payment_method === "cash"
+                        ? "Cash on Delivery"
+                        : "EFT/PayShap"}
+                    </p>
+                  </div>
+
+                  {pendingOrderData.change_needed && (
+                    <div className="bg-green-50 dark:bg-green-950/30 p-3 rounded">
+                      <p className="text-sm text-muted-foreground">
+                        Change Details
+                      </p>
+                      <p className="font-semibold">
+                        Paying with: R{pendingOrderData.customer_amount} |
+                        Change: R{pendingOrderData.calculated_change}
+                      </p>
+                    </div>
+                  )}
+
+                  {pendingOrderData.special_notes && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">
+                        Special Instructions
+                      </p>
+                      <p className="font-semibold italic">
+                        {pendingOrderData.special_notes}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-yellow-50 dark:bg-yellow-950/30 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                  <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">
+                    📱 A WhatsApp message will be sent to notify our team about
+                    your order!
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setShowConfirmDialog(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmAndSubmitOrder}
+                className="bg-gradient-to-r from-primary to-accent"
+              >
+                Confirm & Place Order
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </section>
+  );
+};

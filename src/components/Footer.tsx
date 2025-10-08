@@ -1,0 +1,133 @@
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Facebook,
+  Instagram,
+  MessageCircle,
+  Heart,
+} from "lucide-react";
+
+export const Footer = () => {
+  return (
+    <footer className="bg-gradient-to-b from-card to-muted/30 border-t-2 border-primary/20 mt-20">
+      <div className="container mx-auto px-4 py-16">
+        <div className="grid md:grid-cols-3 gap-12">
+          {/* Contact Info */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                <Heart className="h-5 w-5 text-white" />
+              </div>
+              <h3 className="text-xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Contact Us
+              </h3>
+            </div>
+            <div className="space-y-4">
+              <a
+                href="tel:+27663621868"
+                className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-all duration-300 group"
+              >
+                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <Phone className="h-5 w-5 text-primary" />
+                </div>
+                <span className="font-semibold">066 362 1868</span>
+              </a>
+              <a
+                href="mailto:renoldamaenetja7@gmail.com"
+                className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-all duration-300 group"
+              >
+                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                  <Mail className="h-5 w-5 text-primary" />
+                </div>
+                <span className="font-semibold text-sm">
+                  renoldamaenetja7@gmail.com
+                </span>
+              </a>
+              <div className="flex items-start gap-3 text-muted-foreground">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <MapPin className="h-5 w-5 text-primary" />
+                </div>
+                <span className="font-semibold">Serving the Greater Area</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Business Hours */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-extrabold text-foreground mb-6">
+              Business Hours
+            </h3>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                <span className="font-semibold text-foreground">
+                  Monday - Friday
+                </span>
+                <span className="text-primary font-bold">
+                  9:00 AM - 11:00 PM
+                </span>
+              </div>
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                <span className="font-semibold text-foreground">Saturday</span>
+                <span className="text-muted-foreground font-bold">Closed</span>
+              </div>
+              <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
+                <span className="font-semibold text-foreground">Sunday</span>
+                <span className="text-muted-foreground font-bold">Closed</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Media */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-extrabold text-foreground mb-6">
+              Follow Us
+            </h3>
+            <p className="text-muted-foreground font-medium mb-4">
+              Stay updated with our latest offers and news
+            </p>
+            <div className="flex gap-4">
+              <a
+                title="Facebook"
+                href="https://facebook.com/heavenlypies"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 hover:from-primary hover:to-secondary hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-md hover:shadow-lg"
+              >
+                <Facebook className="h-6 w-6" />
+              </a>
+              <a
+                title="Instagram"
+                href="https://instagram.com/heavenlypies"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 hover:from-primary hover:to-secondary hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-md hover:shadow-lg"
+              >
+                <Instagram className="h-6 w-6" />
+              </a>
+              <a
+                title="WhatsApp"
+                href="https://wa.me/27663621868"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 hover:from-primary hover:to-secondary hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-md hover:shadow-lg"
+              >
+                <MessageCircle className="h-6 w-6" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-border text-center space-y-2">
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Heavenly Pies. All rights
+            reserved.
+          </p>
+          <p className="text-base font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+            Baked with Love, Tastes Like Heaven
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+};
