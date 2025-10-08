@@ -74,13 +74,15 @@ export const Hero = () => {
               </p>
             </div>
 
-            <Button
-              onClick={scrollToOrder}
-              size="lg"
-              className="w-full sm:w-auto bg-white text-primary hover:bg-gray-100 font-bold text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 rounded-xl"
-            >
-              Order Now
-            </Button>
+            <a href="#order-section">
+              <Button
+                onClick={scrollToOrder}
+                size="lg"
+                className="w-full sm:w-auto bg-white text-primary hover:bg-gray-100 font-bold text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 rounded-xl"
+              >
+                Order Now
+              </Button>
+            </a>
           </div>
         </div>
       </div>

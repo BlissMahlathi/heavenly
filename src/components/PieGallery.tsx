@@ -1,6 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Flame, Star, Heart } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 export const PieGallery = () => {
   const pieImages = [
@@ -44,8 +52,8 @@ export const PieGallery = () => {
           </p>
         </div>
 
-        {/* Gallery Grid */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto mb-16">
+        {/* Gallery Grid - Desktop */}
+        <div className="hidden md:grid md:grid-cols-3 gap-8 max-w-7xl mx-auto mb-16">
           {pieImages.map((image, index) => {
             const Icon = image.icon;
             return (
@@ -92,6 +100,70 @@ export const PieGallery = () => {
               </Card>
             );
           })}
+        </div>
+
+        {/* Carousel - Mobile */}
+        <div className="md:hidden max-w-7xl mx-auto mb-16 px-4">
+          <Carousel
+            opts={{
+              align: "center",
+              loop: true,
+            }}
+            plugins={[
+              Autoplay({
+                delay: 3000,
+                stopOnInteraction: true,
+              }),
+            ]}
+            className="w-full"
+          >
+            <CarouselContent>
+              {pieImages.map((image, index) => {
+                const Icon = image.icon;
+                return (
+                  <CarouselItem key={index}>
+                    <Card className="border-2 border-primary/10 bg-gradient-to-b from-card to-card/50">
+                      <CardContent className="p-0">
+                        <div className="relative aspect-square overflow-hidden">
+                          <img
+                            src={image.src}
+                            alt={image.alt}
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Gradient Overlay */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-60" />
+
+                          {/* Content Overlay */}
+                          <div className="absolute inset-0 flex flex-col justify-end p-6">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="p-2 rounded-full bg-primary/20 backdrop-blur-sm">
+                                <Icon className="h-5 w-5 text-primary" />
+                              </div>
+                              <h3 className="text-white text-2xl font-bold">
+                                {image.title}
+                              </h3>
+                            </div>
+                            <p className="text-gray-200 text-sm">
+                              {image.description}
+                            </p>
+                          </div>
+
+                          {/* Corner Badge */}
+                          <div className="absolute top-4 right-4">
+                            <Badge className="bg-accent/90 text-accent-foreground backdrop-blur-sm font-bold shadow-lg">
+                              R30
+                            </Badge>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+            <CarouselPrevious className="left-2" />
+            <CarouselNext className="right-2" />
+          </Carousel>
         </div>
 
         {/* Call to Action Box */}
