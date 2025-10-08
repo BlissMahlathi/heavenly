@@ -48,11 +48,15 @@ export const Hero = () => {
           <div className="flex flex-wrap gap-2 sm:gap-4 mb-6 sm:mb-8 animate-fade-in-delay">
             <div className="flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5 sm:px-4 sm:py-2">
               <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
-              <span className="text-white font-medium text-sm sm:text-base">Quick Delivery</span>
+              <span className="text-white font-medium text-sm sm:text-base">
+                Quick Delivery
+              </span>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5 sm:px-4 sm:py-2">
               <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
-              <span className="text-white font-medium text-sm sm:text-base">Local Service</span>
+              <span className="text-white font-medium text-sm sm:text-base">
+                Local Service
+              </span>
             </div>
           </div>
 
@@ -62,8 +66,12 @@ export const Hero = () => {
               <p className="text-xs sm:text-sm text-primary-foreground/90 font-medium">
                 Starting at
               </p>
-              <p className="text-3xl sm:text-4xl font-bold text-primary-foreground">R30</p>
-              <p className="text-xs sm:text-sm text-primary-foreground/90">per pie</p>
+              <p className="text-3xl sm:text-4xl font-bold text-primary-foreground">
+                R30
+              </p>
+              <p className="text-xs sm:text-sm text-primary-foreground/90">
+                per pie
+              </p>
             </div>
 
             <Button

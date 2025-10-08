@@ -274,37 +274,40 @@ export const OrderForm = () => {
   return (
     <section
       id="order-section"
-      className="py-20 bg-gradient-to-b from-background via-muted/10 to-background"
+      className="py-10 sm:py-16 lg:py-20 bg-gradient-to-b from-background via-muted/10 to-background"
     >
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-3 sm:px-4">
         <Card className="max-w-3xl mx-auto shadow-2xl border-2 border-primary/20 animate-fade-in overflow-hidden">
-          <CardHeader className="bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 border-b border-primary/10 py-8">
-            <CardTitle className="text-4xl font-extrabold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+          <CardHeader className="bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 border-b border-primary/10 py-4 sm:py-6 lg:py-8 px-4 sm:px-6">
+            <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
               Place Your Order
             </CardTitle>
-            <CardDescription className="text-base text-muted-foreground font-medium mt-2">
+            <CardDescription className="text-sm sm:text-base text-muted-foreground font-medium mt-1 sm:mt-2">
               Fill in the details below to order your delicious pies
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-8 pb-8 px-6 md:px-10">
-            <form onSubmit={handleSubmit} className="space-y-8">
+          <CardContent className="pt-4 sm:pt-6 lg:pt-8 pb-4 sm:pb-6 lg:pb-8 px-4 sm:px-6 md:px-8 lg:px-10">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 sm:space-y-6 lg:space-y-8"
+            >
               {/* Quantity Selector */}
-              <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 p-8 rounded-2xl border-2 border-primary/20 shadow-inner">
-                <Label className="text-xl font-bold mb-6 block text-foreground">
+              <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border-2 border-primary/20 shadow-inner">
+                <Label className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 lg:mb-6 block text-foreground">
                   Select Quantity
                 </Label>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     <Button
                       type="button"
                       variant="outline"
                       size="icon"
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="h-14 w-14 hover:scale-110 transition-transform border-2 border-primary/30 hover:border-primary hover:bg-primary/10"
+                      className="h-12 w-12 sm:h-14 sm:w-14 hover:scale-110 transition-transform border-2 border-primary/30 hover:border-primary hover:bg-primary/10"
                     >
-                      <Minus className="h-6 w-6" />
+                      <Minus className="h-5 w-5 sm:h-6 sm:w-6" />
                     </Button>
-                    <span className="text-5xl font-extrabold w-24 text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    <span className="text-4xl sm:text-5xl font-extrabold w-20 sm:w-24 text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                       {quantity}
                     </span>
                     <Button
@@ -312,16 +315,16 @@ export const OrderForm = () => {
                       variant="outline"
                       size="icon"
                       onClick={() => setQuantity(quantity + 1)}
-                      className="h-14 w-14 hover:scale-110 transition-transform border-2 border-primary/30 hover:border-primary hover:bg-primary/10"
+                      className="h-12 w-12 sm:h-14 sm:w-14 hover:scale-110 transition-transform border-2 border-primary/30 hover:border-primary hover:bg-primary/10"
                     >
-                      <Plus className="h-6 w-6" />
+                      <Plus className="h-5 w-5 sm:h-6 sm:w-6" />
                     </Button>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm text-muted-foreground font-semibold uppercase tracking-wider mb-1">
+                  <div className="text-center sm:text-right w-full sm:w-auto">
+                    <div className="text-xs sm:text-sm text-muted-foreground font-semibold uppercase tracking-wider mb-1">
                       Total Price
                     </div>
-                    <div className="text-5xl font-extrabold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                    <div className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
                       R{totalPrice}
                     </div>
                   </div>
@@ -329,14 +332,14 @@ export const OrderForm = () => {
               </div>
 
               {/* Contact Information */}
-              <div className="space-y-5">
-                <h3 className="text-lg font-bold text-foreground mb-4">
+              <div className="space-y-3 sm:space-y-4 lg:space-y-5">
+                <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 sm:mb-3 lg:mb-4">
                   Contact Information
                 </h3>
                 <div>
                   <Label
                     htmlFor="name"
-                    className="text-sm font-semibold text-foreground mb-2 block"
+                    className="text-sm font-semibold text-foreground mb-1.5 sm:mb-2 block"
                   >
                     Full Name *
                   </Label>
@@ -348,14 +351,14 @@ export const OrderForm = () => {
                     }
                     placeholder="Dree pies"
                     required
-                    className="h-13 border-2 border-primary/20 focus:border-primary transition-colors"
+                    className="h-11 sm:h-12 lg:h-13 border-2 border-primary/20 focus:border-primary transition-colors text-base"
                   />
                 </div>
 
                 <div>
                   <Label
                     htmlFor="phone"
-                    className="text-sm font-semibold text-foreground mb-2 block"
+                    className="text-sm font-semibold text-foreground mb-1.5 sm:mb-2 block"
                   >
                     WhatsApp Number *
                   </Label>
@@ -368,14 +371,14 @@ export const OrderForm = () => {
                     }
                     placeholder="066 362 1868"
                     required
-                    className="h-13 border-2 border-primary/20 focus:border-primary transition-colors"
+                    className="h-11 sm:h-12 lg:h-13 border-2 border-primary/20 focus:border-primary transition-colors text-base"
                   />
                 </div>
 
                 <div>
                   <Label
                     htmlFor="email"
-                    className="text-sm font-semibold text-foreground mb-2 block"
+                    className="text-sm font-semibold text-foreground mb-1.5 sm:mb-2 block"
                   >
                     Email (Optional)
                   </Label>
@@ -527,9 +530,9 @@ export const OrderForm = () => {
               <Button
                 type="submit"
                 size="lg"
-                className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 text-primary-foreground font-extrabold text-xl h-16 shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-[1.02] rounded-xl"
+                className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 text-primary-foreground font-extrabold text-base sm:text-lg lg:text-xl h-14 sm:h-15 lg:h-16 shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-[1.02] rounded-xl"
               >
-                <ShoppingCart className="mr-3 h-7 w-7" />
+                <ShoppingCart className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7" />
                 Place Order - R{totalPrice}
               </Button>
             </form>
@@ -541,42 +544,48 @@ export const OrderForm = () => {
           open={showConfirmDialog}
           onOpenChange={setShowConfirmDialog}
         >
-          <AlertDialogContent className="max-w-2xl">
+          <AlertDialogContent className="max-w-[95vw] sm:max-w-xl lg:max-w-2xl max-h-[90vh] overflow-y-auto">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-2xl font-bold">
+              <AlertDialogTitle className="text-xl sm:text-2xl font-bold">
                 Confirm Your Order
               </AlertDialogTitle>
-              <AlertDialogDescription className="text-base">
+              <AlertDialogDescription className="text-sm sm:text-base">
                 Please review your order details before confirming
               </AlertDialogDescription>
             </AlertDialogHeader>
 
             {pendingOrderData && (
-              <div className="space-y-4 py-4">
-                <div className="bg-gradient-to-br from-primary/10 to-accent/10 p-6 rounded-lg space-y-3">
-                  <h3 className="font-bold text-lg border-b pb-2">
+              <div className="space-y-3 sm:space-y-4 py-3 sm:py-4">
+                <div className="bg-gradient-to-br from-primary/10 to-accent/10 p-4 sm:p-6 rounded-lg space-y-2 sm:space-y-3">
+                  <h3 className="font-bold text-base sm:text-lg border-b pb-2">
                     Order Summary
                   </h3>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     <div>
-                      <p className="text-sm text-muted-foreground">Name</p>
-                      <p className="font-semibold">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        Name
+                      </p>
+                      <p className="font-semibold text-sm sm:text-base break-words">
                         {pendingOrderData.customer_name}
                       </p>
                     </div>
 
                     <div>
-                      <p className="text-sm text-muted-foreground">Phone</p>
-                      <p className="font-semibold">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        Phone
+                      </p>
+                      <p className="font-semibold text-sm sm:text-base">
                         {pendingOrderData.customer_phone}
                       </p>
                     </div>
 
                     {pendingOrderData.customer_email && (
-                      <div className="col-span-2">
-                        <p className="text-sm text-muted-foreground">Email</p>
-                        <p className="font-semibold">
+                      <div className="col-span-1 sm:col-span-2">
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          Email
+                        </p>
+                        <p className="font-semibold text-sm sm:text-base break-all">
                           {pendingOrderData.customer_email}
                         </p>
                       </div>
