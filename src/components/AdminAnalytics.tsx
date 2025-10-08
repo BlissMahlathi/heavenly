@@ -1,9 +1,34 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, TrendingUp, DollarSign, ShoppingCart, Clock } from "lucide-react";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import {
+  Download,
+  TrendingUp,
+  DollarSign,
+  ShoppingCart,
+  Clock,
+} from "lucide-react";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 import { toast } from "@/hooks/use-toast";
 
 interface Order {
@@ -53,7 +78,17 @@ export default function AdminAnalytics() {
     });
 
     const csv = [
-      ["Order ID", "Customer", "Phone", "Email", "Quantity", "Total", "Payment", "Status", "Date"],
+      [
+        "Order ID",
+        "Customer",
+        "Phone",
+        "Email",
+        "Quantity",
+        "Total",
+        "Payment",
+        "Status",
+        "Date",
+      ],
       ...monthOrders.map((o) => [
         o.id,
         o.customer_name,
@@ -73,7 +108,9 @@ export default function AdminAnalytics() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `heavenly-pies-report-${now.getFullYear()}-${now.getMonth() + 1}.csv`;
+    a.download = `heavenly-pies-report-${now.getFullYear()}-${
+      now.getMonth() + 1
+    }.csv`;
     a.click();
 
     toast({
@@ -83,16 +120,31 @@ export default function AdminAnalytics() {
   };
 
   // Calculate statistics
-  const totalRevenue = orders.reduce((sum, o) => sum + Number(o.total_price), 0);
+  const totalRevenue = orders.reduce(
+    (sum, o) => sum + Number(o.total_price),
+    0
+  );
   const totalOrders = orders.length;
   const totalPiesSold = orders.reduce((sum, o) => sum + o.quantity, 0);
   const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
   // Orders by status
   const statusData = [
-    { name: "Pending", value: orders.filter((o) => o.status === "pending").length, color: "#ffc107" },
-    { name: "Accepted", value: orders.filter((o) => o.status === "accepted").length, color: "#4caf50" },
-    { name: "Cancelled", value: orders.filter((o) => o.status === "cancelled").length, color: "#f44336" },
+    {
+      name: "Pending",
+      value: orders.filter((o) => o.status === "pending").length,
+      color: "#ffc107",
+    },
+    {
+      name: "Accepted",
+      value: orders.filter((o) => o.status === "accepted").length,
+      color: "#4caf50",
+    },
+    {
+      name: "Cancelled",
+      value: orders.filter((o) => o.status === "cancelled").length,
+      color: "#f44336",
+    },
   ];
 
   // Daily orders for the last 7 days
@@ -115,67 +167,87 @@ export default function AdminAnalytics() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Analytics Dashboard</h2>
-        <Button onClick={downloadMonthlyReport}>
-          <Download className="w-4 h-4 mr-2" />
-          Download Monthly Report
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+        <h2 className="text-xl sm:text-2xl font-bold">Analytics Dashboard</h2>
+        <Button
+          onClick={downloadMonthlyReport}
+          size="sm"
+          className="w-full sm:w-auto"
+        >
+          <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
+          <span className="text-sm sm:text-base">Download Monthly Report</span>
         </Button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium">
+              Total Revenue
+            </CardTitle>
+            <DollarSign className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">R{totalRevenue.toFixed(2)}</div>
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">
+              R{totalRevenue.toFixed(2)}
+            </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium">
+              Total Orders
+            </CardTitle>
+            <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalOrders}</div>
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{totalOrders}</div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Pies Sold</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium">
+              Pies Sold
+            </CardTitle>
+            <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalPiesSold}</div>
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">{totalPiesSold}</div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Avg Order Value</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-medium">
+              Avg Order Value
+            </CardTitle>
+            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">R{avgOrderValue.toFixed(2)}</div>
+          <CardContent className="p-3 sm:p-4 pt-0">
+            <div className="text-xl sm:text-2xl font-bold">
+              R{avgOrderValue.toFixed(2)}
+            </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle>Orders by Status</CardTitle>
-            <CardDescription>Distribution of order statuses</CardDescription>
+          <CardHeader className="p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-base sm:text-lg">
+              Orders by Status
+            </CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
+              Distribution of order statuses
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+          <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+            <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
                   data={statusData}
@@ -198,16 +270,18 @@ export default function AdminAnalytics() {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Daily Orders</CardTitle>
-            <CardDescription>Last 7 days</CardDescription>
+          <CardHeader className="p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-base sm:text-lg">Daily Orders</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
+              Last 7 days
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+          <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+            <ResponsiveContainer width="100%" height={250}>
               <BarChart data={dailyData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
+                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip />
                 <Bar dataKey="orders" fill="hsl(var(--primary))" />
               </BarChart>
@@ -216,18 +290,27 @@ export default function AdminAnalytics() {
         </Card>
 
         <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Revenue Trend</CardTitle>
-            <CardDescription>Last 7 days</CardDescription>
+          <CardHeader className="p-3 sm:p-4 md:p-6">
+            <CardTitle className="text-base sm:text-lg">
+              Revenue Trend
+            </CardTitle>
+            <CardDescription className="text-xs sm:text-sm">
+              Last 7 days
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
+          <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+            <ResponsiveContainer width="100%" height={250}>
               <LineChart data={dailyData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
+                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Line type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={2}
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>

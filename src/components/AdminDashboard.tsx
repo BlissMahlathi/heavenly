@@ -144,37 +144,44 @@ export default function AdminDashboard() {
 
   return (
     <Card className="shadow-xl border-2 border-primary/20">
-      <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10">
-        <CardTitle className="text-2xl">Orders Management</CardTitle>
-        <CardDescription>View and manage customer orders</CardDescription>
+      <CardHeader className="bg-gradient-to-r from-primary/10 to-secondary/10 p-4 sm:p-6">
+        <CardTitle className="text-xl sm:text-2xl">Orders Management</CardTitle>
+        <CardDescription className="text-sm sm:text-base">
+          View and manage customer orders
+        </CardDescription>
       </CardHeader>
-      <CardContent className="pt-6">
+      <CardContent className="pt-4 sm:pt-6 p-3 sm:p-6">
         <Tabs
           defaultValue="all"
           onValueChange={(value) =>
             setFilter(value as "all" | "pending" | "accepted" | "cancelled")
           }
         >
-          <TabsList className="grid w-full grid-cols-4 mb-6 h-12">
-            <TabsTrigger value="all" className="text-base">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 mb-4 sm:mb-6 h-auto sm:h-12 gap-1 sm:gap-0">
+            <TabsTrigger value="all" className="text-xs sm:text-base py-2">
               All ({orders.length})
             </TabsTrigger>
-            <TabsTrigger value="pending" className="text-base">
+            <TabsTrigger value="pending" className="text-xs sm:text-base py-2">
               Pending ({orders.filter((o) => o.status === "pending").length})
             </TabsTrigger>
-            <TabsTrigger value="accepted" className="text-base">
+            <TabsTrigger value="accepted" className="text-xs sm:text-base py-2">
               Accepted ({orders.filter((o) => o.status === "accepted").length})
             </TabsTrigger>
-            <TabsTrigger value="cancelled" className="text-base">
+            <TabsTrigger
+              value="cancelled"
+              className="text-xs sm:text-base py-2"
+            >
               Cancelled ({orders.filter((o) => o.status === "cancelled").length}
               )
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value={filter} className="space-y-4">
+          <TabsContent value={filter} className="space-y-3 sm:space-y-4">
             {filteredOrders.length === 0 ? (
-              <div className="text-center py-16 text-muted-foreground">
-                <p className="text-lg font-medium">No orders found</p>
+              <div className="text-center py-12 sm:py-16 text-muted-foreground">
+                <p className="text-base sm:text-lg font-medium">
+                  No orders found
+                </p>
               </div>
             ) : (
               filteredOrders.map((order) => (
@@ -182,13 +189,13 @@ export default function AdminDashboard() {
                   key={order.id}
                   className="border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow"
                 >
-                  <CardHeader>
+                  <CardHeader className="p-3 sm:p-6">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
                           <Badge
                             variant="outline"
-                            className="font-mono text-xs"
+                            className="font-mono text-[10px] sm:text-xs"
                           >
                             #{order.id.slice(0, 8).toUpperCase()}
                           </Badge>
@@ -196,38 +203,38 @@ export default function AdminDashboard() {
                             {order.status}
                           </Badge>
                         </div>
-                        <CardTitle className="text-xl font-bold">
+                        <CardTitle className="text-lg sm:text-xl font-bold">
                           {order.customer_name}
                         </CardTitle>
-                        <CardDescription className="flex items-center gap-2 mt-1">
-                          <Clock className="h-4 w-4" />
+                        <CardDescription className="flex items-center gap-2 mt-1 text-xs sm:text-sm">
+                          <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                           {new Date(order.created_at).toLocaleString()}
                         </CardDescription>
                       </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
+                  <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-6 pt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                       <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm">
-                          <Phone className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">
+                        <div className="flex items-center gap-2 text-xs sm:text-sm">
+                          <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+                          <span className="font-medium break-all">
                             {order.customer_phone}
                           </span>
                         </div>
                         {order.customer_email && (
-                          <div className="text-sm text-muted-foreground">
+                          <div className="text-xs sm:text-sm text-muted-foreground break-all">
                             Email: {order.customer_email}
                           </div>
                         )}
-                        <div className="flex items-start gap-2 text-sm">
-                          <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                        <div className="flex items-start gap-2 text-xs sm:text-sm">
+                          <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                           <span>{order.delivery_address}</span>
                         </div>
                       </div>
 
-                      <div className="space-y-2 bg-muted/50 p-4 rounded-lg">
-                        <div className="text-sm flex justify-between">
+                      <div className="space-y-2 bg-muted/50 p-3 sm:p-4 rounded-lg">
+                        <div className="text-xs sm:text-sm flex justify-between">
                           <span className="text-muted-foreground">
                             Quantity:
                           </span>
@@ -235,13 +242,13 @@ export default function AdminDashboard() {
                             {order.quantity} pie(s)
                           </span>
                         </div>
-                        <div className="text-sm flex justify-between">
+                        <div className="text-xs sm:text-sm flex justify-between">
                           <span className="text-muted-foreground">Total:</span>
-                          <span className="font-bold text-lg text-primary">
+                          <span className="font-bold text-base sm:text-lg text-primary">
                             R{order.total_price}
                           </span>
                         </div>
-                        <div className="text-sm flex justify-between">
+                        <div className="text-xs sm:text-sm flex justify-between">
                           <span className="text-muted-foreground">
                             Payment:
                           </span>
@@ -253,8 +260,8 @@ export default function AdminDashboard() {
                           order.change_needed &&
                           order.calculated_change !== null && (
                             <div className="bg-accent/20 p-2 rounded border border-accent/40 mt-2">
-                              <div className="flex items-center gap-2 text-sm">
-                                <Coins className="h-4 w-4 text-accent-foreground" />
+                              <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+                                <Coins className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent-foreground flex-shrink-0" />
                                 <span className="text-muted-foreground">
                                   Customer pays:
                                 </span>
@@ -262,7 +269,7 @@ export default function AdminDashboard() {
                                   R{order.customer_amount}
                                 </span>
                               </div>
-                              <div className="text-sm font-bold text-accent-foreground mt-1">
+                              <div className="text-xs sm:text-sm font-bold text-accent-foreground mt-1">
                                 Change: R{order.calculated_change.toFixed(2)}
                               </div>
                             </div>
@@ -271,26 +278,26 @@ export default function AdminDashboard() {
                     </div>
 
                     {order.special_notes && (
-                      <div className="bg-accent/10 p-3 rounded-lg border border-accent/30">
-                        <div className="text-sm font-semibold mb-1">
+                      <div className="bg-accent/10 p-2.5 sm:p-3 rounded-lg border border-accent/30">
+                        <div className="text-xs sm:text-sm font-semibold mb-1">
                           Special Instructions:
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-xs sm:text-sm text-muted-foreground">
                           {order.special_notes}
                         </div>
                       </div>
                     )}
 
-                    <div className="flex gap-2 pt-2">
+                    <div className="flex flex-col sm:flex-row gap-2 pt-2">
                       {order.status === "pending" && (
                         <>
                           <Button
                             onClick={() =>
                               updateOrderStatus(order.id, "accepted")
                             }
-                            className="bg-success hover:bg-success/90 text-success-foreground flex-1"
+                            className="bg-success hover:bg-success/90 text-success-foreground flex-1 text-sm sm:text-base h-10 sm:h-11"
                           >
-                            <CheckCircle className="mr-2 h-4 w-4" />
+                            <CheckCircle className="mr-1.5 sm:mr-2 h-4 w-4" />
                             Order Received
                           </Button>
                           <Button
@@ -298,21 +305,25 @@ export default function AdminDashboard() {
                             onClick={() =>
                               updateOrderStatus(order.id, "cancelled")
                             }
-                            className="flex-1"
+                            className="flex-1 text-sm sm:text-base h-10 sm:h-11"
                           >
-                            <XCircle className="mr-2 h-4 w-4" />
+                            <XCircle className="mr-1.5 sm:mr-2 h-4 w-4" />
                             Mark Cancelled
                           </Button>
                         </>
                       )}
                       {order.status === "accepted" && (
-                        <Button variant="outline" asChild className="w-full">
+                        <Button
+                          variant="outline"
+                          asChild
+                          className="w-full text-sm sm:text-base h-10 sm:h-11"
+                        >
                           <a
                             href={getWhatsAppLink(order)}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <MessageCircle className="mr-2 h-4 w-4" />
+                            <MessageCircle className="mr-1.5 sm:mr-2 h-4 w-4" />
                             Send Follow-up on WhatsApp
                           </a>
                         </Button>
