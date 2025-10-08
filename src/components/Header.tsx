@@ -77,7 +77,9 @@ export const Header = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
-              <span className="font-semibold text-sm sm:text-base">066 362 1868</span>
+              <span className="font-semibold text-sm sm:text-base">
+                066 362 1868
+              </span>
             </a>
             <a
               href="mailto:renoldamaenetja7@gmail.com"
@@ -85,7 +87,9 @@ export const Header = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
-              <span className="font-semibold text-sm sm:text-base break-all">renoldamaenetja7@gmail.com</span>
+              <span className="font-semibold text-sm sm:text-base break-all">
+                renoldamaenetja7@gmail.com
+              </span>
             </a>
           </div>
         )}
