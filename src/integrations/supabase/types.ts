@@ -49,6 +49,7 @@ export type Database = {
       orders: {
         Row: {
           calculated_change: number | null;
+          cart_items: Json | null;
           change_needed: boolean | null;
           created_at: string | null;
           customer_amount: number | null;
@@ -56,6 +57,7 @@ export type Database = {
           customer_name: string;
           customer_phone: string;
           delivery_address: string;
+          flavor: string | null;
           id: string;
           payment_method: string;
           quantity: number;
@@ -65,6 +67,7 @@ export type Database = {
         };
         Insert: {
           calculated_change?: number | null;
+          cart_items?: Json | null;
           change_needed?: boolean | null;
           created_at?: string | null;
           customer_amount?: number | null;
@@ -72,6 +75,7 @@ export type Database = {
           customer_name: string;
           customer_phone: string;
           delivery_address: string;
+          flavor?: string | null;
           id?: string;
           payment_method: string;
           quantity: number;
@@ -81,6 +85,7 @@ export type Database = {
         };
         Update: {
           calculated_change?: number | null;
+          cart_items?: Json | null;
           change_needed?: boolean | null;
           created_at?: string | null;
           customer_amount?: number | null;
@@ -88,6 +93,7 @@ export type Database = {
           customer_name?: string;
           customer_phone?: string;
           delivery_address?: string;
+          flavor?: string | null;
           id?: string;
           payment_method?: string;
           quantity?: number;

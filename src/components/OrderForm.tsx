@@ -25,9 +25,19 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 
 const PIE_PRICE = 30;
 const TRANSFER_FEE = 2;
+
+// Define cart item type
+type CartItem = {
+  id: string;
+  flavor: Flavor;
+  quantity: number;
+  price: number;
+  total: number;
+};
 
 // Define available flavors and their prices
 const FLAVORS = {
@@ -45,6 +55,7 @@ const sendWhatsAppNotification = (order: {
   customer_name: string;
   customer_phone: string;
   customer_email: string | null;
+  cart_items?: CartItem[] | Json; // Can be CartItem[] or Json from database
   quantity: number;
   total_price: number;
   delivery_address: string;
@@ -53,7 +64,6 @@ const sendWhatsAppNotification = (order: {
   customer_amount: number | null;
   calculated_change: number | null;
   special_notes: string | null;
-  flavor?: string;
 }) => {
   // Your admin WhatsApp number (replace with actual number, e.g., '27663621868' for +27 66 362 1868)
   const adminWhatsAppNumber = "27663621868"; // Change this to your actual number
@@ -61,6 +71,19 @@ const sendWhatsAppNotification = (order: {
   const changeInfo = order.change_needed
     ? `Customer paying with: R${order.customer_amount} | Change needed: R${order.calculated_change}`
     : "No change needed";
+
+  // Build order items list - handle both CartItem[] and Json types
+  let orderItems = "";
+  if (order.cart_items && Array.isArray(order.cart_items)) {
+    orderItems = (order.cart_items as CartItem[])
+      .map(
+        (item) =>
+          `• ${item.flavor}: ${item.quantity} pie(s) x R${item.price} = R${item.total}`
+      )
+      .join("\n");
+  } else {
+    orderItems = `• Mixed pies: ${order.quantity} pie(s)`;
+  }
 
   const message = `🔔 NEW PIE ORDER!
 
@@ -70,9 +93,10 @@ const sendWhatsAppNotification = (order: {
 📞 Phone: ${order.customer_phone}
 ${order.customer_email ? `📧 Email: ${order.customer_email}` : ""}
 
-🥧 Flavor: ${order.flavor || "Chicken Mild"}
-🥧 Quantity: ${order.quantity} pie(s)
-💵 Total: R${order.total_price}
+🥧 Order Items:
+${orderItems}
+
+💵 Total: R${order.total_price} (${order.quantity} pie(s) total)
 
 📍 Delivery Address:
 ${order.delivery_address}
@@ -97,6 +121,7 @@ const sendAdminNotification = async (order: {
   customer_name: string;
   customer_phone: string;
   customer_email: string | null;
+  cart_items?: CartItem[] | Json;
   quantity: number;
   total_price: number;
   delivery_address: string;
@@ -105,13 +130,23 @@ const sendAdminNotification = async (order: {
   customer_amount: number | null;
   calculated_change: number | null;
   special_notes: string | null;
-  flavor?: string;
 }) => {
   try {
     // Create a detailed notification message
     const changeInfo = order.change_needed
       ? `\n💵 Customer paying with: R${order.customer_amount}\n💰 Change needed: R${order.calculated_change}`
       : "\n✅ No change needed";
+
+    // Build order items list
+    const orderItems =
+      order.cart_items && Array.isArray(order.cart_items)
+        ? (order.cart_items as CartItem[])
+            .map(
+              (item) =>
+                `• ${item.flavor}: ${item.quantity} pie(s) x R${item.price} = R${item.total}`
+            )
+            .join("\n")
+        : `• Chicken Mild: ${order.quantity} pie(s)`;
 
     const notificationMessage = `
 🔔 NEW PIE ORDER RECEIVED!
@@ -122,9 +157,10 @@ const sendAdminNotification = async (order: {
 📞 Phone: ${order.customer_phone}
 ${order.customer_email ? `📧 Email: ${order.customer_email}` : ""}
 
-🥧 Flavor: ${order.flavor || "Chicken Mild"}
-🥧 Quantity: ${order.quantity} pie(s)
-💵 Total: R${order.total_price}
+🥧 Order Items:
+${orderItems}
+
+💵 Total: R${order.total_price} (${order.quantity} pie(s) total)
 
 📍 Delivery Address:
 ${order.delivery_address}
@@ -157,14 +193,15 @@ Full Order ID: ${order.id}
 };
 
 export const OrderForm = () => {
-  const [quantity, setQuantity] = useState(1);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [changeNeeded, setChangeNeeded] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingOrderData, setPendingOrderData] = useState<{
     customer_name: string;
     customer_phone: string;
     customer_email: string | null;
-    quantity: number;
+    cart_items: CartItem[];
+    total_quantity: number;
     total_price: number;
     delivery_address: string;
     payment_method: string;
@@ -172,7 +209,6 @@ export const OrderForm = () => {
     customer_amount: number | null;
     calculated_change: number | null;
     special_notes: string | null;
-    flavor: string;
     status: string;
   } | null>(null);
   const [formData, setFormData] = useState({
@@ -183,22 +219,71 @@ export const OrderForm = () => {
     paymentMethod: "cash",
     customerAmount: "",
     notes: "",
-    flavor: "Chicken Mild" as Flavor,
   });
 
-  const totalPrice = quantity * FLAVORS[formData.flavor];
+  // Current item being added to cart
+  const [currentItem, setCurrentItem] = useState({
+    flavor: "Chicken Mild" as Flavor,
+    quantity: 1,
+  });
+
+  // Calculate cart totals
+  const cartTotal = cart.reduce((sum, item) => sum + item.total, 0);
   const transferFee = formData.paymentMethod === "eft" ? TRANSFER_FEE : 0;
-  const finalTotal = totalPrice + transferFee;
+  const finalTotal = cartTotal + transferFee;
+  const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
   const calculatedChange =
     changeNeeded && formData.customerAmount
       ? Number(formData.customerAmount) - finalTotal
       : 0;
+
+  // Add item to cart
+  const addToCart = () => {
+    if (currentItem.quantity <= 0) return;
+
+    const newItem: CartItem = {
+      id: `${currentItem.flavor}-${Date.now()}`,
+      flavor: currentItem.flavor,
+      quantity: currentItem.quantity,
+      price: FLAVORS[currentItem.flavor],
+      total: currentItem.quantity * FLAVORS[currentItem.flavor],
+    };
+
+    setCart([...cart, newItem]);
+    setCurrentItem({ flavor: "Chicken Mild", quantity: 1 });
+  };
+
+  // Remove item from cart
+  const removeFromCart = (itemId: string) => {
+    setCart(cart.filter((item) => item.id !== itemId));
+  };
+
+  // Update item quantity in cart
+  const updateCartItemQuantity = (itemId: string, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      removeFromCart(itemId);
+      return;
+    }
+
+    setCart(
+      cart.map((item) =>
+        item.id === itemId
+          ? { ...item, quantity: newQuantity, total: newQuantity * item.price }
+          : item
+      )
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name || !formData.phone || !formData.address) {
       toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (cart.length === 0) {
+      toast.error("Please add at least one item to your cart");
       return;
     }
 
@@ -221,7 +306,8 @@ export const OrderForm = () => {
       customer_name: formData.name,
       customer_phone: formData.phone,
       customer_email: formData.email || null,
-      quantity,
+      cart_items: cart,
+      total_quantity: totalQuantity,
       total_price: finalTotal,
       delivery_address: formData.address,
       payment_method: formData.paymentMethod,
@@ -229,7 +315,6 @@ export const OrderForm = () => {
       customer_amount: changeNeeded ? Number(formData.customerAmount) : null,
       calculated_change: changeNeeded ? calculatedChange : null,
       special_notes: formData.notes || null,
-      flavor: formData.flavor,
       status: "pending",
     };
 
@@ -244,7 +329,21 @@ export const OrderForm = () => {
     try {
       const { data: newOrder, error } = await supabase
         .from("orders")
-        .insert(pendingOrderData)
+        .insert({
+          customer_name: pendingOrderData.customer_name,
+          customer_phone: pendingOrderData.customer_phone,
+          customer_email: pendingOrderData.customer_email,
+          quantity: pendingOrderData.total_quantity,
+          total_price: pendingOrderData.total_price,
+          delivery_address: pendingOrderData.delivery_address,
+          payment_method: pendingOrderData.payment_method,
+          change_needed: pendingOrderData.change_needed,
+          customer_amount: pendingOrderData.customer_amount,
+          calculated_change: pendingOrderData.calculated_change,
+          special_notes: pendingOrderData.special_notes,
+          cart_items: pendingOrderData.cart_items,
+          status: pendingOrderData.status,
+        })
         .select()
         .single();
 
@@ -262,7 +361,7 @@ export const OrderForm = () => {
       const orderNumber = newOrder?.id.slice(0, 8).toUpperCase() || "";
 
       toast.success("Order placed successfully!", {
-        description: `Order #${orderNumber} - ${pendingOrderData.quantity} pie(s) for R${pendingOrderData.total_price}. Check WhatsApp for confirmation!`,
+        description: `Order #${orderNumber} - ${pendingOrderData.total_quantity} pie(s) for R${pendingOrderData.total_price}. Check WhatsApp for confirmation!`,
         duration: 6000,
       });
 
@@ -275,9 +374,9 @@ export const OrderForm = () => {
         paymentMethod: "cash",
         customerAmount: "",
         notes: "",
-        flavor: "Chicken Mild",
       });
-      setQuantity(1);
+      setCart([]);
+      setCurrentItem({ flavor: "Chicken Mild", quantity: 1 });
       setChangeNeeded(false);
       setShowConfirmDialog(false);
       setPendingOrderData(null);
@@ -312,97 +411,198 @@ export const OrderForm = () => {
               onSubmit={handleSubmit}
               className="space-y-4 sm:space-y-6 lg:space-y-8"
             >
-              {/* Quantity Selector */}
+              {/* Add to Cart Section */}
               <div className="bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border-2 border-primary/20 shadow-inner">
                 <Label className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 lg:mb-6 block text-foreground">
-                  Select Quantity
+                  Add Pies to Your Cart
                 </Label>
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
-                  <div className="flex items-center gap-3 sm:gap-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="h-12 w-12 sm:h-14 sm:w-14 hover:scale-110 transition-transform border-2 border-primary/30 hover:border-primary hover:bg-primary/10"
+
+                <div className="space-y-4">
+                  {/* Flavor Selection for Cart */}
+                  <div>
+                    <Label className="text-sm font-semibold mb-2 block">
+                      Select Flavor
+                    </Label>
+                    <RadioGroup
+                      value={currentItem.flavor}
+                      onValueChange={(value: Flavor) =>
+                        setCurrentItem({ ...currentItem, flavor: value })
+                      }
+                      className="grid grid-cols-2 gap-2"
                     >
-                      <Minus className="h-5 w-5 sm:h-6 sm:w-6" />
-                    </Button>
-                    <span className="text-4xl sm:text-5xl font-extrabold w-20 sm:w-24 text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                      {quantity}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="h-12 w-12 sm:h-14 sm:w-14 hover:scale-110 transition-transform border-2 border-primary/30 hover:border-primary hover:bg-primary/10"
-                    >
-                      <Plus className="h-5 w-5 sm:h-6 sm:w-6" />
-                    </Button>
+                      {Object.entries(FLAVORS).map(([flavor, price]) => (
+                        <div
+                          key={flavor}
+                          className={`relative p-2 rounded-lg border-2 transition-all cursor-pointer text-xs ${
+                            currentItem.flavor === flavor
+                              ? "border-primary bg-primary/10"
+                              : "border-orange-200 dark:border-orange-800 hover:border-orange-400"
+                          }`}
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem
+                              value={flavor}
+                              id={`cart-${flavor}`}
+                              className="h-3 w-3"
+                            />
+                            <Label
+                              htmlFor={`cart-${flavor}`}
+                              className="cursor-pointer flex-1 font-medium"
+                            >
+                              {flavor}
+                            </Label>
+                            <span className="text-primary font-bold">
+                              R{price}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </RadioGroup>
                   </div>
-                  <div className="text-center sm:text-right w-full sm:w-auto">
-                    <div className="text-xs sm:text-sm text-muted-foreground font-semibold uppercase tracking-wider mb-1">
-                      Total Price
+
+                  {/* Quantity Selector for Cart */}
+                  <div>
+                    <Label className="text-sm font-semibold mb-2 block">
+                      Quantity
+                    </Label>
+                    <div className="flex items-center justify-center gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() =>
+                          setCurrentItem({
+                            ...currentItem,
+                            quantity: Math.max(1, currentItem.quantity - 1),
+                          })
+                        }
+                        className="h-10 w-10 hover:scale-110 transition-transform border-2 border-primary/30 hover:border-primary"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="text-2xl font-extrabold w-12 text-center bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        {currentItem.quantity}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() =>
+                          setCurrentItem({
+                            ...currentItem,
+                            quantity: currentItem.quantity + 1,
+                          })
+                        }
+                        className="h-10 w-10 hover:scale-110 transition-transform border-2 border-primary/30 hover:border-primary"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <div className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-                      R{totalPrice}
+                    <div className="text-center mt-2">
+                      <span className="text-sm text-muted-foreground">
+                        Subtotal:{" "}
+                      </span>
+                      <span className="font-bold text-primary">
+                        R{currentItem.quantity * FLAVORS[currentItem.flavor]}
+                      </span>
                     </div>
-                    {formData.paymentMethod === "eft" && (
-                      <div className="text-xs sm:text-sm text-muted-foreground font-medium mt-1">
-                        + R{TRANSFER_FEE} transfer fee = R{finalTotal}
-                      </div>
-                    )}
                   </div>
+
+                  {/* Add to Cart Button */}
+                  <Button
+                    type="button"
+                    onClick={addToCart}
+                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold"
+                  >
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    Add to Cart
+                  </Button>
                 </div>
               </div>
 
-              {/* Flavor Selection */}
-              <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border-2 border-orange-300 dark:border-orange-700 shadow-inner">
-                <Label className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 lg:mb-6 block text-foreground">
-                  Select Your Flavor
-                </Label>
-                <RadioGroup
-                  value={formData.flavor}
-                  onValueChange={(value: Flavor) =>
-                    setFormData({ ...formData, flavor: value })
-                  }
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
-                >
-                  {Object.entries(FLAVORS).map(([flavor, price]) => (
-                    <div
-                      key={flavor}
-                      className={`relative p-3 sm:p-4 rounded-xl border-2 transition-all cursor-pointer ${
-                        formData.flavor === flavor
-                          ? "border-primary bg-primary/10 shadow-lg"
-                          : "border-orange-200 dark:border-orange-800 hover:border-orange-400 dark:hover:border-orange-600 bg-white/60 dark:bg-gray-900/40"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <RadioGroupItem
-                          value={flavor}
-                          id={flavor}
-                          className="h-4 w-4 sm:h-5 sm:w-5"
-                        />
-                        <Label
-                          htmlFor={flavor}
-                          className="cursor-pointer flex-1 font-semibold text-sm sm:text-base"
-                        >
-                          {flavor}
-                        </Label>
-                        <div className="text-right">
-                          <div className="text-lg sm:text-xl font-bold text-primary">
-                            R{price}
+              {/* Cart Items Display */}
+              {cart.length > 0 && (
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border-2 border-blue-300 dark:border-blue-700 shadow-inner">
+                  <Label className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 lg:mb-6 block text-foreground">
+                    Your Cart ({totalQuantity} pie
+                    {totalQuantity !== 1 ? "s" : ""})
+                  </Label>
+
+                  <div className="space-y-3">
+                    {cart.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between p-3 bg-white/60 dark:bg-gray-900/40 rounded-lg border border-blue-200 dark:border-blue-800"
+                      >
+                        <div className="flex-1">
+                          <div className="font-semibold text-sm sm:text-base">
+                            {item.flavor}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            per pie
+                            {item.quantity} x R{item.price} = R{item.total}
                           </div>
                         </div>
+
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              updateCartItemQuantity(item.id, item.quantity - 1)
+                            }
+                            className="h-6 w-6 p-0"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="text-sm font-bold w-6 text-center">
+                            {item.quantity}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              updateCartItemQuantity(item.id, item.quantity + 1)
+                            }
+                            className="h-6 w-6 p-0"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeFromCart(item.id)}
+                            className="h-6 w-6 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            ×
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="border-t pt-3 mt-4">
+                      <div className="flex justify-between items-center text-sm sm:text-base">
+                        <span className="font-semibold">Cart Total:</span>
+                        <span className="font-bold text-primary">
+                          R{cartTotal}
+                        </span>
+                      </div>
+                      {formData.paymentMethod === "eft" && (
+                        <div className="flex justify-between items-center text-xs sm:text-sm text-muted-foreground mt-1">
+                          <span>+ Transfer fee:</span>
+                          <span>R{TRANSFER_FEE}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between items-center text-base sm:text-lg font-bold mt-2 pt-2 border-t">
+                        <span>Final Total:</span>
+                        <span className="text-primary">R{finalTotal}</span>
                       </div>
                     </div>
-                  ))}
-                </RadioGroup>
-              </div>
+                  </div>
+                </div>
+              )}
 
               {/* Contact Information */}
               <div className="space-y-3 sm:space-y-4 lg:space-y-5">
@@ -708,10 +908,15 @@ export const OrderForm = () => {
               <Button
                 type="submit"
                 size="lg"
-                className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 text-primary-foreground font-extrabold text-base sm:text-lg lg:text-xl h-14 sm:h-15 lg:h-16 shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-[1.02] rounded-xl"
+                disabled={cart.length === 0}
+                className="w-full bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 text-primary-foreground font-extrabold text-base sm:text-lg lg:text-xl h-14 sm:h-15 lg:h-16 shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-[1.02] rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ShoppingCart className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7" />
-                Place Order - R{finalTotal}
+                {cart.length === 0
+                  ? "Add Items to Cart"
+                  : `Place Order - R${finalTotal} (${totalQuantity} pie${
+                      totalQuantity !== 1 ? "s" : ""
+                    })`}
               </Button>
             </form>
           </CardContent>
@@ -769,18 +974,28 @@ export const OrderForm = () => {
                       </div>
                     )}
 
-                    <div>
-                      <p className="text-sm text-muted-foreground">Quantity</p>
-                      <p className="font-semibold text-xl">
-                        {pendingOrderData.quantity} pie(s)
+                    <div className="col-span-1 sm:col-span-2">
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Order Items
                       </p>
-                    </div>
-
-                    <div>
-                      <p className="text-sm text-muted-foreground">Flavor</p>
-                      <p className="font-semibold text-lg text-orange-600 dark:text-orange-400">
-                        {pendingOrderData.flavor || "Chicken Mild"}
-                      </p>
+                      <div className="space-y-1">
+                        {pendingOrderData.cart_items.map((item, index) => (
+                          <div
+                            key={index}
+                            className="text-sm bg-orange-50 dark:bg-orange-950/30 p-2 rounded"
+                          >
+                            <span className="font-semibold text-orange-700 dark:text-orange-300">
+                              {item.flavor}:
+                            </span>{" "}
+                            {item.quantity} pie(s) x R{item.price} = R
+                            {item.total}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="text-sm font-bold mt-2 pt-2 border-t">
+                        Total: {pendingOrderData.total_quantity} pie(s) for R
+                        {pendingOrderData.total_price}
+                      </div>
                     </div>
 
                     <div>
