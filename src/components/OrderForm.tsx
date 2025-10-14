@@ -172,6 +172,7 @@ export const OrderForm = () => {
     customer_amount: number | null;
     calculated_change: number | null;
     special_notes: string | null;
+    flavor: string;
     status: string;
   } | null>(null);
   const [formData, setFormData] = useState({

@@ -151,7 +151,7 @@ export const PieGallery = () => {
                           {/* Corner Badge */}
                           <div className="absolute top-4 right-4">
                             <Badge className="bg-accent/90 text-accent-foreground backdrop-blur-sm font-bold shadow-lg">
-                              R30
+                              R40
                             </Badge>
                           </div>
                         </div>
@@ -171,7 +171,7 @@ export const PieGallery = () => {
           <Card className="overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5">
             <CardContent className="p-8 md:p-12 text-center">
               <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Only R30 per pie
+                Only R30-R40 per pie
               </h3>
               <div className="flex flex-wrap justify-center gap-4 text-muted-foreground font-medium">
                 <div className="flex items-center gap-2">
