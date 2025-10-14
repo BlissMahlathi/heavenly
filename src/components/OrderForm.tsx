@@ -29,6 +29,16 @@ import { supabase } from "@/integrations/supabase/client";
 const PIE_PRICE = 30;
 const TRANSFER_FEE = 2;
 
+// Define available flavors and their prices
+const FLAVORS = {
+  "Chicken Mild": 30,
+  "Chicken Hot": 30,
+  "Beef Mild": 40,
+  "Beef Hot": 40,
+} as const;
+
+type Flavor = keyof typeof FLAVORS;
+
 // Function to send WhatsApp message to admin
 const sendWhatsAppNotification = (order: {
   id: string;
@@ -43,6 +53,7 @@ const sendWhatsAppNotification = (order: {
   customer_amount: number | null;
   calculated_change: number | null;
   special_notes: string | null;
+  flavor?: string;
 }) => {
   // Your admin WhatsApp number (replace with actual number, e.g., '27663621868' for +27 66 362 1868)
   const adminWhatsAppNumber = "27663621868"; // Change this to your actual number
@@ -59,6 +70,7 @@ const sendWhatsAppNotification = (order: {
 📞 Phone: ${order.customer_phone}
 ${order.customer_email ? `📧 Email: ${order.customer_email}` : ""}
 
+🥧 Flavor: ${order.flavor || "Chicken Mild"}
 🥧 Quantity: ${order.quantity} pie(s)
 💵 Total: R${order.total_price}
 
@@ -93,6 +105,7 @@ const sendAdminNotification = async (order: {
   customer_amount: number | null;
   calculated_change: number | null;
   special_notes: string | null;
+  flavor?: string;
 }) => {
   try {
     // Create a detailed notification message
@@ -109,6 +122,7 @@ const sendAdminNotification = async (order: {
 📞 Phone: ${order.customer_phone}
 ${order.customer_email ? `📧 Email: ${order.customer_email}` : ""}
 
+🥧 Flavor: ${order.flavor || "Chicken Mild"}
 🥧 Quantity: ${order.quantity} pie(s)
 💵 Total: R${order.total_price}
 
@@ -168,9 +182,10 @@ export const OrderForm = () => {
     paymentMethod: "cash",
     customerAmount: "",
     notes: "",
+    flavor: "Chicken Mild" as Flavor,
   });
 
-  const totalPrice = quantity * PIE_PRICE;
+  const totalPrice = quantity * FLAVORS[formData.flavor];
   const transferFee = formData.paymentMethod === "eft" ? TRANSFER_FEE : 0;
   const finalTotal = totalPrice + transferFee;
   const calculatedChange =
@@ -213,6 +228,7 @@ export const OrderForm = () => {
       customer_amount: changeNeeded ? Number(formData.customerAmount) : null,
       calculated_change: changeNeeded ? calculatedChange : null,
       special_notes: formData.notes || null,
+      flavor: formData.flavor,
       status: "pending",
     };
 
@@ -258,6 +274,7 @@ export const OrderForm = () => {
         paymentMethod: "cash",
         customerAmount: "",
         notes: "",
+        flavor: "Chicken Mild",
       });
       setQuantity(1);
       setChangeNeeded(false);
@@ -337,6 +354,53 @@ export const OrderForm = () => {
                     )}
                   </div>
                 </div>
+              </div>
+
+              {/* Flavor Selection */}
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30 p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border-2 border-orange-300 dark:border-orange-700 shadow-inner">
+                <Label className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 lg:mb-6 block text-foreground">
+                  Select Your Flavor
+                </Label>
+                <RadioGroup
+                  value={formData.flavor}
+                  onValueChange={(value: Flavor) =>
+                    setFormData({ ...formData, flavor: value })
+                  }
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
+                >
+                  {Object.entries(FLAVORS).map(([flavor, price]) => (
+                    <div
+                      key={flavor}
+                      className={`relative p-3 sm:p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                        formData.flavor === flavor
+                          ? "border-primary bg-primary/10 shadow-lg"
+                          : "border-orange-200 dark:border-orange-800 hover:border-orange-400 dark:hover:border-orange-600 bg-white/60 dark:bg-gray-900/40"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <RadioGroupItem
+                          value={flavor}
+                          id={flavor}
+                          className="h-4 w-4 sm:h-5 sm:w-5"
+                        />
+                        <Label
+                          htmlFor={flavor}
+                          className="cursor-pointer flex-1 font-semibold text-sm sm:text-base"
+                        >
+                          {flavor}
+                        </Label>
+                        <div className="text-right">
+                          <div className="text-lg sm:text-xl font-bold text-primary">
+                            R{price}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            per pie
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </RadioGroup>
               </div>
 
               {/* Contact Information */}
@@ -708,6 +772,13 @@ export const OrderForm = () => {
                       <p className="text-sm text-muted-foreground">Quantity</p>
                       <p className="font-semibold text-xl">
                         {pendingOrderData.quantity} pie(s)
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-muted-foreground">Flavor</p>
+                      <p className="font-semibold text-lg text-orange-600 dark:text-orange-400">
+                        {pendingOrderData.flavor || "Chicken Mild"}
                       </p>
                     </div>
 

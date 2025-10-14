@@ -32,9 +32,9 @@ export const Hero = () => {
 
           {/* Main Heading */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold mb-4 sm:mb-6 text-white leading-tight animate-slide-up">
-            Delicious Chicken <br />
+            Delicious Handmade <br />
             <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-              n Pepper Pies
+              Chicken & Beef Pies
             </span>
           </h1>
 
@@ -64,10 +64,10 @@ export const Hero = () => {
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 animate-slide-up-delay-2">
             <div className="bg-gradient-to-r from-primary to-secondary rounded-2xl px-6 py-3 sm:px-8 sm:py-4 shadow-2xl text-center sm:text-left">
               <p className="text-xs sm:text-sm text-primary-foreground/90 font-medium">
-                Starting at
+                From
               </p>
               <p className="text-3xl sm:text-4xl font-bold text-primary-foreground">
-                R30
+                R30 - R40
               </p>
               <p className="text-xs sm:text-sm text-primary-foreground/90">
                 per pie
