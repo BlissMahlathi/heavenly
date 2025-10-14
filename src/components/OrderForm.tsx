@@ -49,9 +49,29 @@ const FLAVORS = {
 
 type Flavor = keyof typeof FLAVORS;
 
+type OrderResponse = {
+  id: string;
+  order_number?: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_email: string | null;
+  cart_items?: CartItem[] | Json;
+  quantity: number;
+  total_price: number;
+  delivery_address: string;
+  payment_method: string;
+  change_needed: boolean;
+  customer_amount: number | null;
+  calculated_change: number | null;
+  special_notes: string | null;
+  status: string;
+  created_at: string;
+};
+
 // Function to send WhatsApp message to admin
 const sendWhatsAppNotification = (order: {
   id: string;
+  order_number?: string;
   customer_name: string;
   customer_phone: string;
   customer_email: string | null;
@@ -87,7 +107,7 @@ const sendWhatsAppNotification = (order: {
 
   const message = `🔔 NEW PIE ORDER!
 
-📋 ORDER #${order.id.slice(0, 8).toUpperCase()}
+📋 ORDER #${order.order_number || order.id.slice(0, 8).toUpperCase()}
 
 👤 Customer: ${order.customer_name}
 📞 Phone: ${order.customer_phone}
@@ -118,6 +138,7 @@ ${order.special_notes ? `📝 Notes: ${order.special_notes}` : ""}`;
 // Function to send notification to admin
 const sendAdminNotification = async (order: {
   id: string;
+  order_number?: string;
   customer_name: string;
   customer_phone: string;
   customer_email: string | null;
@@ -151,7 +172,7 @@ const sendAdminNotification = async (order: {
     const notificationMessage = `
 🔔 NEW PIE ORDER RECEIVED!
 
-� ORDER #${order.id.slice(0, 8).toUpperCase()}
+� ORDER #${order.order_number || order.id.slice(0, 8).toUpperCase()}
 
 �👤 Customer: ${order.customer_name}
 📞 Phone: ${order.customer_phone}
@@ -172,6 +193,7 @@ ${order.delivery_address}
 ${order.special_notes ? `📝 Special Instructions:\n${order.special_notes}` : ""}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Order Number: ${order.order_number || order.id.slice(0, 8).toUpperCase()}
 Full Order ID: ${order.id}
 `;
 
@@ -358,7 +380,10 @@ export const OrderForm = () => {
       }
 
       // Show order number to customer
-      const orderNumber = newOrder?.id.slice(0, 8).toUpperCase() || "";
+      const orderNumber =
+        (newOrder as OrderResponse)?.order_number ||
+        newOrder?.id.slice(0, 8).toUpperCase() ||
+        "";
 
       toast.success("Order placed successfully!", {
         description: `Order #${orderNumber} - ${pendingOrderData.total_quantity} pie(s) for R${pendingOrderData.total_price}. Check WhatsApp for confirmation!`,
