@@ -427,21 +427,21 @@ export const OrderForm = () => {
     >
       {/* Background Image with Overlay */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center bg-fixed"
         style={{ backgroundImage: `url(/piephone1view2.jpeg)` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/85 to-black/75" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background/20" />
       </div>
 
       {/* Content */}
       <div className="container mx-auto px-3 sm:px-4 relative z-10">
-        <Card className="max-w-3xl mx-auto shadow-2xl border-2 border-primary/20 animate-fade-in overflow-hidden">
-          <CardHeader className="bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 border-b border-primary/10 py-4 sm:py-6 lg:py-8 px-4 sm:px-6">
+        <Card className="max-w-3xl mx-auto shadow-2xl border-2 border-white/20 animate-fade-in overflow-hidden backdrop-blur-sm bg-white/95 dark:bg-gray-900/95">
+          <CardHeader className="bg-gradient-to-br from-primary/15 via-accent/10 to-secondary/15 border-b border-primary/20 py-4 sm:py-6 lg:py-8 px-4 sm:px-6">
             <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
               Place Your Order
             </CardTitle>
-            <CardDescription className="text-sm sm:text-base text-muted-foreground font-medium mt-1 sm:mt-2">
+            <CardDescription className="text-sm sm:text-base text-gray-600 dark:text-gray-300 font-medium mt-1 sm:mt-2">
               Fill in the details below to order your delicious pies
             </CardDescription>
           </CardHeader>

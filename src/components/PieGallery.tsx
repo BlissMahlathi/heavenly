@@ -103,24 +103,24 @@ export const PieGallery = () => {
     <section className="relative py-20 overflow-hidden">
       {/* Background Image with Overlay */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center bg-fixed"
         style={{ backgroundImage: `url(/piephoto1view3.jpeg)` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/80 to-black/70" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/70 to-background" />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/30" />
       </div>
 
       {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16 animate-fade-in">
-          <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 px-4 py-2 text-sm font-semibold">
+          <Badge className="mb-4 bg-white/20 backdrop-blur-sm text-white border-white/30 px-4 py-2 text-sm font-semibold shadow-lg">
             Our Pie Collection
           </Badge>
-          <h2 className="text-4xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-6xl font-extrabold mb-6 text-white drop-shadow-lg">
             Choose Your Flavor
           </h2>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-100 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
             From tender chicken to premium beef, each pie is handmade with fresh
             ingredients, wrapped in our signature golden crust. Mix and match
             flavors in your cart!
@@ -134,7 +134,7 @@ export const PieGallery = () => {
             return (
               <Card
                 key={flavor.name}
-                className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-2 border-primary/10 hover:border-primary/30 bg-gradient-to-b from-card to-card/50"
+                className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-2 border-white/20 hover:border-primary/50 bg-white/10 backdrop-blur-sm"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <CardContent className="p-0">
@@ -199,7 +199,7 @@ export const PieGallery = () => {
                 const Icon = flavor.icon;
                 return (
                   <CarouselItem key={flavor.name}>
-                    <Card className="border-2 border-primary/10 bg-gradient-to-b from-card to-card/50">
+                    <Card className="border-2 border-white/20 bg-white/10 backdrop-blur-sm">
                       <CardContent className="p-0">
                         <div className="relative aspect-square overflow-hidden">
                           <img
@@ -247,12 +247,12 @@ export const PieGallery = () => {
 
         {/* Call to Action Box */}
         <div className="max-w-4xl mx-auto mb-16">
-          <Card className="overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5">
+          <Card className="overflow-hidden border-2 border-white/30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-2xl">
             <CardContent className="p-8 md:p-12 text-center">
               <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Chicken Pies: R29.99 | Beef Pies: R39.99
               </h3>
-              <p className="text-lg text-muted-foreground mb-6">
+              <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
                 Mix and match any combination in your cart!
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
@@ -262,28 +262,36 @@ export const PieGallery = () => {
                   <span className="font-semibold text-orange-700 dark:text-orange-300">
                     Chicken Mild
                   </span>
-                  <span className="text-muted-foreground">R29.99</span>
+                  <span className="text-gray-600 dark:text-gray-300 font-medium">
+                    R29.99
+                  </span>
                 </div>
                 <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-red-50 dark:bg-red-950/30">
                   <Flame className="h-6 w-6 text-red-600" />
                   <span className="font-semibold text-red-700 dark:text-red-300">
                     Chicken Hot
                   </span>
-                  <span className="text-muted-foreground">R29.99</span>
+                  <span className="text-gray-600 dark:text-gray-300 font-medium">
+                    R29.99
+                  </span>
                 </div>
                 <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-amber-50 dark:bg-amber-950/30">
                   <Beef className="h-6 w-6 text-amber-600" />
                   <span className="font-semibold text-amber-700 dark:text-amber-300">
                     Beef Mild
                   </span>
-                  <span className="text-muted-foreground">R39.99</span>
+                  <span className="text-gray-600 dark:text-gray-300 font-medium">
+                    R39.99
+                  </span>
                 </div>
                 <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-red-50 dark:bg-red-950/30">
                   <Flame className="h-6 w-6 text-red-600" />
                   <span className="font-semibold text-red-700 dark:text-red-300">
                     Beef Hot
                   </span>
-                  <span className="text-muted-foreground">R39.99</span>
+                  <span className="text-gray-600 dark:text-gray-300 font-medium">
+                    R39.99
+                  </span>
                 </div>
 
                 {/* New Items with "NEW" Badge */}
@@ -303,7 +311,9 @@ export const PieGallery = () => {
                   <span className="font-semibold text-yellow-700 dark:text-yellow-300">
                     Chicken & Mushroom
                   </span>
-                  <span className="text-muted-foreground">R34.99</span>
+                  <span className="text-gray-600 dark:text-gray-300 font-medium">
+                    R34.99
+                  </span>
                 </div>
                 <div className="relative flex flex-col items-center gap-2 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-400 dark:border-yellow-600">
                   {showNewBadges && (
@@ -321,7 +331,9 @@ export const PieGallery = () => {
                   <span className="font-semibold text-yellow-700 dark:text-yellow-300">
                     Cheesy Chicken
                   </span>
-                  <span className="text-muted-foreground">R34.99</span>
+                  <span className="text-gray-600 dark:text-gray-300 font-medium">
+                    R34.99
+                  </span>
                 </div>
                 <div className="relative flex flex-col items-center gap-2 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-400 dark:border-yellow-600">
                   {showNewBadges && (
@@ -339,7 +351,9 @@ export const PieGallery = () => {
                   <span className="font-semibold text-yellow-700 dark:text-yellow-300">
                     Chip Rolls
                   </span>
-                  <span className="text-muted-foreground">R24.99</span>
+                  <span className="text-gray-600 dark:text-gray-300 font-medium">
+                    R24.99
+                  </span>
                 </div>
                 <div className="relative flex flex-col items-center gap-2 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-400 dark:border-yellow-600">
                   {showNewBadges && (
@@ -357,7 +371,9 @@ export const PieGallery = () => {
                   <span className="font-semibold text-yellow-700 dark:text-yellow-300">
                     Russian Roll
                   </span>
-                  <span className="text-muted-foreground">R19.99</span>
+                  <span className="text-gray-600 dark:text-gray-300 font-medium">
+                    R19.99
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -366,7 +382,7 @@ export const PieGallery = () => {
 
         {/* Friday Special Deals */}
         <div className="max-w-4xl mx-auto">
-          <Card className="overflow-hidden border-2 border-yellow-400 dark:border-yellow-600 bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 dark:from-yellow-950/20 dark:via-orange-950/20 dark:to-red-950/20 shadow-xl">
+          <Card className="overflow-hidden border-2 border-yellow-400 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-2xl">
             <CardHeader className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 text-white py-6 sm:py-8">
               <div className="flex items-center justify-center gap-3 mb-2">
                 <Star className="h-8 w-8 fill-white" />
@@ -389,7 +405,7 @@ export const PieGallery = () => {
                       <h4 className="text-xl md:text-2xl font-bold text-foreground mb-2">
                         Buy 3 Pies - Get FREE Drink! 🥤
                       </h4>
-                      <p className="text-muted-foreground">
+                      <p className="text-gray-600 dark:text-gray-300">
                         Order any 3 pies of your choice and receive a
                         complimentary drink on us!
                       </p>
@@ -408,7 +424,7 @@ export const PieGallery = () => {
                       <h4 className="text-xl md:text-2xl font-bold text-foreground mb-2">
                         2 Chicken + 1 Beef Pie = FREE Drink! 🥤
                       </h4>
-                      <p className="text-muted-foreground">
+                      <p className="text-gray-600 dark:text-gray-300">
                         Get 2 Chicken Pies and 1 Beef Pie in one order and enjoy
                         a free drink!
                       </p>
@@ -427,7 +443,7 @@ export const PieGallery = () => {
                       <h4 className="text-xl md:text-2xl font-bold text-foreground mb-2">
                         2 Beef + 1 Chicken Pie = FREE Drink! 🥤
                       </h4>
-                      <p className="text-muted-foreground">
+                      <p className="text-gray-600 dark:text-gray-300">
                         Get 2 Beef Pies and 1 Chicken Pie in one order and enjoy
                         a free drink!
                       </p>
@@ -439,7 +455,7 @@ export const PieGallery = () => {
                 </div>
 
                 {/* Terms */}
-                <div className="bg-yellow-100 dark:bg-yellow-900/20 border-l-4 border-yellow-500 p-4 rounded text-sm text-muted-foreground italic">
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 p-4 rounded text-sm text-gray-700 dark:text-gray-200 italic">
                   <p>
                     💡 <strong>Tip:</strong> Mix and match any Chicken and Beef
                     varieties to qualify for these amazing Friday deals! Order
