@@ -100,8 +100,18 @@ export const PieGallery = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-b from-background via-muted/20 to-background">
-      <div className="container mx-auto px-4">
+    <section className="relative py-20 overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(/piephoto1view3.jpeg)` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/80 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-background/70 to-background" />
+      </div>
+
+      {/* Content */}
+      <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-16 animate-fade-in">
           <Badge className="mb-4 bg-primary/10 text-primary border-primary/20 px-4 py-2 text-sm font-semibold">

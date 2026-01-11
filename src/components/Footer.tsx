@@ -10,8 +10,17 @@ import {
 
 export const Footer = () => {
   return (
-    <footer className="bg-gradient-to-b from-card to-muted/30 border-t-2 border-primary/20 mt-10 sm:mt-16 lg:mt-20">
-      <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16">
+    <footer className="relative bg-gradient-to-b from-card to-muted/30 border-t-2 border-primary/20 mt-10 sm:mt-16 lg:mt-20 overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-20"
+        style={{ backgroundImage: `url(/piephone1.jpeg)` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/60" />
+      </div>
+
+      {/* Content */}
+      <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
           {/* Contact Info */}
           <div className="space-y-3 sm:space-y-4">
