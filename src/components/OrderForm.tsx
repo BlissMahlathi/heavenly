@@ -467,30 +467,30 @@ export const OrderForm = () => {
                       onValueChange={(value: Flavor) =>
                         setCurrentItem({ ...currentItem, flavor: value })
                       }
-                      className="grid grid-cols-2 gap-2"
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-2"
                     >
                       {Object.entries(FLAVORS).map(([flavor, price]) => (
                         <div
                           key={flavor}
-                          className={`relative p-2 rounded-lg border-2 transition-all cursor-pointer text-xs ${
+                          className={`relative p-3 rounded-lg border-2 transition-all cursor-pointer ${
                             currentItem.flavor === flavor
                               ? "border-primary bg-primary/10"
                               : "border-orange-200 dark:border-orange-800 hover:border-orange-400"
                           }`}
                         >
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center gap-2">
                             <RadioGroupItem
                               value={flavor}
                               id={`cart-${flavor}`}
-                              className="h-3 w-3"
+                              className="h-4 w-4 shrink-0"
                             />
                             <Label
                               htmlFor={`cart-${flavor}`}
-                              className="cursor-pointer flex-1 font-medium"
+                              className="cursor-pointer flex-1 font-medium text-sm leading-tight"
                             >
                               {flavor}
                             </Label>
-                            <span className="text-primary font-bold">
+                            <span className="text-primary font-bold text-sm whitespace-nowrap shrink-0">
                               R{price}
                             </span>
                           </div>
