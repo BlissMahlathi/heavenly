@@ -17,6 +17,13 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 
 export const PieGallery = () => {
+  // Date-based logic for NEW badges
+  const launchDate = new Date("2026-01-11"); // January 11, 2026
+  const twoMonthsLater = new Date(launchDate);
+  twoMonthsLater.setMonth(twoMonthsLater.getMonth() + 2); // March 11, 2026
+  const currentDate = new Date();
+  const showNewBadges = currentDate < twoMonthsLater;
+
   const pieFlavors = [
     {
       name: "Chicken Mild",
@@ -78,7 +85,7 @@ export const PieGallery = () => {
       description: "Crispy rolls filled with hot chips",
       icon: Star,
       color: "from-amber-400 to-orange-600",
-      image: "/piephone1.jpeg",
+      image: "/chipsRolls.jpeg",
       alt: "Chip Rolls - Crispy and crunchy",
     },
     {
@@ -87,7 +94,7 @@ export const PieGallery = () => {
       description: "Classic Russian style roll",
       icon: Star,
       color: "from-orange-500 to-red-600",
-      image: "/piephone1view2.jpeg",
+      image: "/russianrolls.jpeg",
       alt: "Russian Roll - Traditional favorite",
     },
   ];
@@ -239,6 +246,7 @@ export const PieGallery = () => {
                 Mix and match any combination in your cart!
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                {/* Original Items */}
                 <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-orange-50 dark:bg-orange-950/30">
                   <Drumstick className="h-6 w-6 text-orange-600" />
                   <span className="font-semibold text-orange-700 dark:text-orange-300">
@@ -266,6 +274,80 @@ export const PieGallery = () => {
                     Beef Hot
                   </span>
                   <span className="text-muted-foreground">R39.99</span>
+                </div>
+
+                {/* New Items with "NEW" Badge */}
+                <div className="relative flex flex-col items-center gap-2 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-400 dark:border-yellow-600">
+                  {showNewBadges && (
+                    <div
+                      className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
+                      style={{
+                        transform: "rotate(45deg)",
+                        transformOrigin: "center",
+                      }}
+                    >
+                      NEW
+                    </div>
+                  )}
+                  <Drumstick className="h-6 w-6 text-yellow-600" />
+                  <span className="font-semibold text-yellow-700 dark:text-yellow-300">
+                    Chicken & Mushroom
+                  </span>
+                  <span className="text-muted-foreground">R34.99</span>
+                </div>
+                <div className="relative flex flex-col items-center gap-2 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-400 dark:border-yellow-600">
+                  {showNewBadges && (
+                    <div
+                      className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
+                      style={{
+                        transform: "rotate(45deg)",
+                        transformOrigin: "center",
+                      }}
+                    >
+                      NEW
+                    </div>
+                  )}
+                  <Drumstick className="h-6 w-6 text-yellow-600" />
+                  <span className="font-semibold text-yellow-700 dark:text-yellow-300">
+                    Cheesy Chicken
+                  </span>
+                  <span className="text-muted-foreground">R34.99</span>
+                </div>
+                <div className="relative flex flex-col items-center gap-2 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-400 dark:border-yellow-600">
+                  {showNewBadges && (
+                    <div
+                      className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
+                      style={{
+                        transform: "rotate(45deg)",
+                        transformOrigin: "center",
+                      }}
+                    >
+                      NEW
+                    </div>
+                  )}
+                  <Star className="h-6 w-6 text-yellow-600" />
+                  <span className="font-semibold text-yellow-700 dark:text-yellow-300">
+                    Chip Rolls
+                  </span>
+                  <span className="text-muted-foreground">R24.99</span>
+                </div>
+                <div className="relative flex flex-col items-center gap-2 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-400 dark:border-yellow-600">
+                  {showNewBadges && (
+                    <div
+                      className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
+                      style={{
+                        transform: "rotate(45deg)",
+                        transformOrigin: "center",
+                      }}
+                    >
+                      NEW
+                    </div>
+                  )}
+                  <Star className="h-6 w-6 text-yellow-600" />
+                  <span className="font-semibold text-yellow-700 dark:text-yellow-300">
+                    Russian Roll
+                  </span>
+                  <span className="text-muted-foreground">R19.99</span>
                 </div>
               </div>
             </CardContent>
