@@ -41,10 +41,14 @@ type CartItem = {
 
 // Define available flavors and their prices
 const FLAVORS = {
-  "Chicken Mild": 30,
-  "Chicken Hot": 30,
-  "Beef Mild": 40,
-  "Beef Hot": 40,
+  "Chicken Mild": 29.99,
+  "Chicken Hot": 29.99,
+  "Beef Mild": 39.99,
+  "Beef Hot": 39.99,
+  "Chicken and Mushroom": 34.99,
+  "Cheesy Chicken Pie": 34.99,
+  "Chips Rolls": 24.99,
+  "Russian Roll": 19.99,
 } as const;
 
 type Flavor = keyof typeof FLAVORS;

@@ -14,7 +14,7 @@ export const PieGallery = () => {
   const pieFlavors = [
     {
       name: "Chicken Mild",
-      price: 30,
+      price: 29.99,
       description: "Tender chicken with mild spices",
       icon: Drumstick,
       color: "from-orange-400 to-red-500",
@@ -23,7 +23,7 @@ export const PieGallery = () => {
     },
     {
       name: "Chicken Hot",
-      price: 30,
+      price: 29.99,
       description: "Spicy chicken with bold flavors",
       icon: Flame,
       color: "from-red-500 to-pink-600",
@@ -32,7 +32,7 @@ export const PieGallery = () => {
     },
     {
       name: "Beef Mild",
-      price: 40,
+      price: 39.99,
       description: "Premium beef with mild seasoning",
       icon: Beef,
       color: "from-amber-600 to-orange-700",
@@ -41,12 +41,48 @@ export const PieGallery = () => {
     },
     {
       name: "Beef Hot",
-      price: 40,
+      price: 39.99,
       description: "Spicy beef with intense flavor",
       icon: Flame,
       color: "from-red-600 to-red-800",
       image: "/piephone1.jpeg",
       alt: "Beef Hot Pie - Bold and spicy",
+    },
+    {
+      name: "Chicken and Mushroom",
+      price: 34.99,
+      description: "Creamy chicken with fresh mushrooms",
+      icon: Drumstick,
+      color: "from-yellow-400 to-orange-500",
+      image: "/piephone1.jpeg",
+      alt: "Chicken and Mushroom Pie - Fresh and savory",
+    },
+    {
+      name: "Cheesy Chicken Pie",
+      price: 34.99,
+      description: "Golden cheese melted with tender chicken",
+      icon: Drumstick,
+      color: "from-yellow-500 to-amber-600",
+      image: "/piephone1view2.jpeg",
+      alt: "Cheesy Chicken Pie - Rich and creamy",
+    },
+    {
+      name: "Chip Rolls",
+      price: 24.99,
+      description: "Crispy rolls filled with hot chips",
+      icon: Star,
+      color: "from-amber-400 to-orange-600",
+      image: "/piephone1.jpeg",
+      alt: "Chip Rolls - Crispy and crunchy",
+    },
+    {
+      name: "Russian Roll",
+      price: 19.99,
+      description: "Classic Russian style roll",
+      icon: Star,
+      color: "from-orange-500 to-red-600",
+      image: "/piephone1view2.jpeg",
+      alt: "Russian Roll - Traditional favorite",
     },
   ];
 
@@ -187,11 +223,11 @@ export const PieGallery = () => {
         </div>
 
         {/* Call to Action Box */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto mb-16">
           <Card className="overflow-hidden border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5">
             <CardContent className="p-8 md:p-12 text-center">
               <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Chicken Pies: R30 | Beef Pies: R40
+                Chicken Pies: R29.99 | Beef Pies: R39.99
               </h3>
               <p className="text-lg text-muted-foreground mb-6">
                 Mix and match any combination in your cart!
@@ -202,28 +238,115 @@ export const PieGallery = () => {
                   <span className="font-semibold text-orange-700 dark:text-orange-300">
                     Chicken Mild
                   </span>
-                  <span className="text-muted-foreground">R30</span>
+                  <span className="text-muted-foreground">R29.99</span>
                 </div>
                 <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-red-50 dark:bg-red-950/30">
                   <Flame className="h-6 w-6 text-red-600" />
                   <span className="font-semibold text-red-700 dark:text-red-300">
                     Chicken Hot
                   </span>
-                  <span className="text-muted-foreground">R30</span>
+                  <span className="text-muted-foreground">R29.99</span>
                 </div>
                 <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-amber-50 dark:bg-amber-950/30">
                   <Beef className="h-6 w-6 text-amber-600" />
                   <span className="font-semibold text-amber-700 dark:text-amber-300">
                     Beef Mild
                   </span>
-                  <span className="text-muted-foreground">R40</span>
+                  <span className="text-muted-foreground">R39.99</span>
                 </div>
                 <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-red-50 dark:bg-red-950/30">
                   <Flame className="h-6 w-6 text-red-600" />
                   <span className="font-semibold text-red-700 dark:text-red-300">
                     Beef Hot
                   </span>
-                  <span className="text-muted-foreground">R40</span>
+                  <span className="text-muted-foreground">R39.99</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Friday Special Deals */}
+        <div className="max-w-4xl mx-auto">
+          <Card className="overflow-hidden border-2 border-yellow-400 dark:border-yellow-600 bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 dark:from-yellow-950/20 dark:via-orange-950/20 dark:to-red-950/20 shadow-xl">
+            <CardHeader className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 text-white py-6 sm:py-8">
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <Star className="h-8 w-8 fill-white" />
+                <CardTitle className="text-3xl md:text-4xl font-extrabold">
+                  🎉 FRIDAY SPECIAL DEALS 🎉
+                </CardTitle>
+                <Star className="h-8 w-8 fill-white" />
+              </div>
+              <CardDescription className="text-white text-center text-lg font-semibold mt-2">
+                Available Every Friday - Limited Time Offers!
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-8 md:p-12">
+              <div className="space-y-6">
+                {/* Deal 1 */}
+                <div className="bg-white dark:bg-gray-900/50 border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
+                  <div className="flex items-start gap-4">
+                    <div className="text-3xl">🥧</div>
+                    <div className="flex-1">
+                      <h4 className="text-xl md:text-2xl font-bold text-foreground mb-2">
+                        Buy 3 Pies - Get FREE Drink! 🥤
+                      </h4>
+                      <p className="text-muted-foreground">
+                        Order any 3 pies of your choice and receive a
+                        complimentary drink on us!
+                      </p>
+                      <div className="mt-3 inline-block bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
+                        Save with every 3 pies!
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Deal 2 */}
+                <div className="bg-white dark:bg-gray-900/50 border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
+                  <div className="flex items-start gap-4">
+                    <div className="text-3xl">🍗</div>
+                    <div className="flex-1">
+                      <h4 className="text-xl md:text-2xl font-bold text-foreground mb-2">
+                        2 Chicken + 1 Beef Pie = FREE Drink! 🥤
+                      </h4>
+                      <p className="text-muted-foreground">
+                        Get 2 Chicken Pies and 1 Beef Pie in one order and enjoy
+                        a free drink!
+                      </p>
+                      <div className="mt-3 inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
+                        Perfect combo deal!
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Deal 3 */}
+                <div className="bg-white dark:bg-gray-900/50 border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
+                  <div className="flex items-start gap-4">
+                    <div className="text-3xl">🥩</div>
+                    <div className="flex-1">
+                      <h4 className="text-xl md:text-2xl font-bold text-foreground mb-2">
+                        2 Beef + 1 Chicken Pie = FREE Drink! 🥤
+                      </h4>
+                      <p className="text-muted-foreground">
+                        Get 2 Beef Pies and 1 Chicken Pie in one order and enjoy
+                        a free drink!
+                      </p>
+                      <div className="mt-3 inline-block bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 px-3 py-1 rounded-full text-sm font-semibold">
+                        Beef lovers special!
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Terms */}
+                <div className="bg-yellow-100 dark:bg-yellow-900/20 border-l-4 border-yellow-500 p-4 rounded text-sm text-muted-foreground italic">
+                  <p>
+                    💡 <strong>Tip:</strong> Mix and match any Chicken and Beef
+                    varieties to qualify for these amazing Friday deals! Order
+                    now and save!
+                  </p>
                 </div>
               </div>
             </CardContent>
