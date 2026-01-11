@@ -423,9 +423,19 @@ export const OrderForm = () => {
   return (
     <section
       id="order-section"
-      className="py-10 sm:py-16 lg:py-20 bg-gradient-to-b from-background via-muted/10 to-background"
+      className="relative py-10 sm:py-16 lg:py-20 overflow-hidden"
     >
-      <div className="container mx-auto px-3 sm:px-4">
+      {/* Background Image with Overlay */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(/piephone1view2.jpeg)` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/85 to-black/75" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
+      </div>
+
+      {/* Content */}
+      <div className="container mx-auto px-3 sm:px-4 relative z-10">
         <Card className="max-w-3xl mx-auto shadow-2xl border-2 border-primary/20 animate-fade-in overflow-hidden">
           <CardHeader className="bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10 border-b border-primary/10 py-4 sm:py-6 lg:py-8 px-4 sm:px-6">
             <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
