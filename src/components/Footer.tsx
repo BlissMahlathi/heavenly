@@ -78,7 +78,7 @@ export const Footer = () => {
                   Monday - Friday
                 </span>
                 <span className="text-primary font-bold text-xs sm:text-sm">
-                  9:00 AM - 11:00 PM
+                  9:00 AM - 22:00 PM
                 </span>
               </div>
               <div className="flex justify-between items-center p-2 sm:p-3 rounded-lg bg-white/10 backdrop-blur-sm">
@@ -86,7 +86,7 @@ export const Footer = () => {
                   Saturday
                 </span>
                 <span className="text-primary font-bold text-xs sm:text-sm">
-                  9:00 AM - 11:00 PM
+                  9:00 AM - 21:00 PM
                 </span>
               </div>
               <div className="flex justify-between items-center p-2 sm:p-3 rounded-lg bg-white/10 backdrop-blur-sm">
