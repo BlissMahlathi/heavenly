@@ -5,6 +5,8 @@ import {
   Drumstick,
   Flame,
   Info,
+  Minus,
+  Plus,
   ShoppingCart,
   Sparkles,
   Star,
@@ -35,7 +37,8 @@ type FlavorName =
   | "Cheesy Chicken Pie"
   | "Chips Rolls"
   | "Russian Roll"
-  | "Wors Rolls";
+  | "Wors Rolls"
+  | "Small Chips";
 
 type MenuItem = {
   name: FlavorName;
@@ -138,8 +141,8 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Wors Rolls",
-    description: "Grilled wors roll with a smoky, savory bite.",
-    price: 24.99,
+    description: "Grilled wors roll filled with chips and smoky flavor.",
+    price: 29.0,
     image: "/worsrolls.jpeg",
     alt: "Wors rolls",
     icon: Star,
@@ -150,29 +153,24 @@ const menuItems: MenuItem[] = [
 
 const fridayDeals: FridayDeal[] = [
   {
-    id: "deal-3pies",
-    title: "Buy 3 pies and get a free drink",
-    description: "Add any 3 pies to your cart and the drink is on us.",
-    items: [{ flavor: "Chicken Mild", quantity: 3 }],
-    badge: "Mix and match",
-  },
-  {
     id: "deal-2chicken-1beef",
     title: "2 Chicken + 1 Beef with a free drink",
-    description: "Classic combo with a free drink every Friday.",
+    description: "Classic combo with a free drink and small chips.",
     items: [
       { flavor: "Chicken Mild", quantity: 2 },
       { flavor: "Beef Mild", quantity: 1 },
+      { flavor: "Small Chips", quantity: 1 },
     ],
     badge: "Combo favorite",
   },
   {
     id: "deal-2beef-1chicken",
     title: "2 Beef + 1 Chicken with a free drink",
-    description: "Big flavor, built for beef lovers.",
+    description: "Big flavor with a free drink and small chips.",
     items: [
       { flavor: "Beef Mild", quantity: 2 },
       { flavor: "Chicken Mild", quantity: 1 },
+      { flavor: "Small Chips", quantity: 1 },
     ],
     badge: "Beef lovers",
   },
@@ -186,6 +184,7 @@ const dispatchAddToCart = (flavor: FlavorName, quantity = 1) => {
 
 export const PieGallery = () => {
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [specialsOpen, setSpecialsOpen] = useState(false);
 
   const handleAddDeal = (deal: FridayDeal) => {
@@ -251,7 +250,10 @@ export const PieGallery = () => {
               <button
                 key={item.name}
                 type="button"
-                onClick={() => setSelectedItem(item)}
+                onClick={() => {
+                  setSelectedItem(item);
+                  setSelectedQuantity(1);
+                }}
                 className="text-left"
               >
                 <Card className="group overflow-hidden border-2 border-white/20 bg-white/10 backdrop-blur-sm hover:border-white/40 hover:-translate-y-1 transition-all duration-300">
@@ -317,7 +319,10 @@ export const PieGallery = () => {
       <Dialog
         open={Boolean(selectedItem)}
         onOpenChange={(open) => {
-          if (!open) setSelectedItem(null);
+          if (!open) {
+            setSelectedItem(null);
+            setSelectedQuantity(1);
+          }
         }}
       >
         <DialogContent className="max-w-2xl">
@@ -353,11 +358,42 @@ export const PieGallery = () => {
                 <div className="text-3xl font-extrabold text-foreground">
                   R{selectedItem.price.toFixed(2)}
                 </div>
+                <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Quantity
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() =>
+                        setSelectedQuantity((prev) => Math.max(1, prev - 1))
+                      }
+                      className="h-8 w-8"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="w-8 text-center font-bold">
+                      {selectedQuantity}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setSelectedQuantity((prev) => prev + 1)}
+                      className="h-8 w-8"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
                 <Button
                   className="w-full"
                   onClick={() => {
-                    dispatchAddToCart(selectedItem.name, 1);
+                    dispatchAddToCart(selectedItem.name, selectedQuantity);
                     setSelectedItem(null);
+                    setSelectedQuantity(1);
                   }}
                 >
                   <ShoppingCart className="mr-2 h-5 w-5" />
