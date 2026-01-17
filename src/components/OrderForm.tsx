@@ -98,7 +98,7 @@ const sendWhatsAppNotification = (order: {
 
   const changeInfo = order.change_needed
     ? `Customer paying with: R${formatCurrency(
-        order.customer_amount || 0
+        order.customer_amount || 0,
       )} | Change needed: R${formatCurrency(order.calculated_change || 0)}`
     : "No change needed";
 
@@ -116,8 +116,8 @@ const sendWhatsAppNotification = (order: {
       .map(
         (item) =>
           `• ${item.flavor}: ${item.quantity} pie(s) x R${formatCurrency(
-            item.price
-          )} = R${formatCurrency(item.total)}`
+            item.price,
+          )} = R${formatCurrency(item.total)}`,
       )
       .join("\n");
   } else {
@@ -151,7 +151,7 @@ ${order.special_notes ? `📝 Notes: ${order.special_notes}` : ""}`;
 
   // Open WhatsApp with pre-filled message
   const whatsappUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(
-    message
+    message,
   )}`;
   window.open(whatsappUrl, "_blank");
 };
@@ -177,7 +177,7 @@ const sendAdminNotification = async (order: {
     // Create a detailed notification message
     const changeInfo = order.change_needed
       ? `\n💵 Customer paying with: R${formatCurrency(
-          order.customer_amount || 0
+          order.customer_amount || 0,
         )}\n💰 Change needed: R${formatCurrency(order.calculated_change || 0)}`
       : "\n✅ No change needed";
 
@@ -195,8 +195,8 @@ const sendAdminNotification = async (order: {
             .map(
               (item) =>
                 `• ${item.flavor}: ${item.quantity} pie(s) x R${formatCurrency(
-                  item.price
-                )} = R${formatCurrency(item.total)}`
+                  item.price,
+                )} = R${formatCurrency(item.total)}`,
             )
             .join("\n")
         : `• Chicken Mild: ${order.quantity} pie(s)`;
@@ -334,8 +334,8 @@ export const OrderForm = () => {
       cart.map((item) =>
         item.id === itemId
           ? { ...item, quantity: newQuantity, total: newQuantity * item.price }
-          : item
-      )
+          : item,
+      ),
     );
   };
 
@@ -436,7 +436,7 @@ export const OrderForm = () => {
         description: `Order #${orderNumber} - ${
           pendingOrderData.total_quantity
         } pie(s) for R${formatCurrency(
-          pendingOrderData.total_price
+          pendingOrderData.total_price,
         )}. Check WhatsApp for confirmation!`,
         duration: 6000,
       });
@@ -604,6 +604,8 @@ export const OrderForm = () => {
                   </Label>
                   <Input
                     id="name"
+                    name="name"
+                    autoComplete="name"
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
@@ -623,6 +625,8 @@ export const OrderForm = () => {
                   </Label>
                   <Input
                     id="phone"
+                    name="phone"
+                    autoComplete="tel"
                     type="tel"
                     value={formData.phone}
                     onChange={(e) =>
@@ -643,6 +647,8 @@ export const OrderForm = () => {
                   </Label>
                   <Input
                     id="email"
+                    name="email"
+                    autoComplete="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) =>
@@ -660,6 +666,7 @@ export const OrderForm = () => {
                   Order Type *
                 </Label>
                 <RadioGroup
+                  name="fulfillment"
                   value={formData.fulfillment}
                   onValueChange={(value) =>
                     setFormData({
@@ -710,6 +717,8 @@ export const OrderForm = () => {
                   </Label>
                   <Textarea
                     id="address"
+                    name="address"
+                    autoComplete="street-address"
                     value={formData.address}
                     onChange={(e) =>
                       setFormData({ ...formData, address: e.target.value })
@@ -728,6 +737,7 @@ export const OrderForm = () => {
                   Payment Method *
                 </Label>
                 <RadioGroup
+                  name="paymentMethod"
                   value={formData.paymentMethod}
                   onValueChange={(value) =>
                     setFormData({ ...formData, paymentMethod: value })
@@ -846,7 +856,7 @@ export const OrderForm = () => {
                               (includes
                               {isDelivery
                                 ? ` R${formatCurrency(
-                                    DELIVERY_FEE
+                                    DELIVERY_FEE,
                                   )} delivery fee and`
                                 : ""}{" "}
                               R{formatCurrency(TRANSFER_FEE)} transfer fee)
@@ -882,6 +892,7 @@ export const OrderForm = () => {
                       </Label>
                       <Switch
                         id="changeNeeded"
+                        name="changeNeeded"
                         checked={changeNeeded}
                         onCheckedChange={setChangeNeeded}
                       />
@@ -897,6 +908,8 @@ export const OrderForm = () => {
                         </Label>
                         <Input
                           id="customerAmount"
+                          name="customerAmount"
+                          autoComplete="off"
                           type="number"
                           placeholder="e.g., 50"
                           value={formData.customerAmount}
@@ -935,6 +948,8 @@ export const OrderForm = () => {
                 </Label>
                 <Textarea
                   id="notes"
+                  name="notes"
+                  autoComplete="off"
                   value={formData.notes}
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
@@ -956,7 +971,7 @@ export const OrderForm = () => {
                 {cart.length === 0
                   ? "Add Items to Cart"
                   : `Place Order - R${formatCurrency(
-                      finalTotal
+                      finalTotal,
                     )} (${totalQuantity} pie${totalQuantity !== 1 ? "s" : ""})`}
               </Button>
             </form>
@@ -1053,7 +1068,7 @@ export const OrderForm = () => {
                           {pendingOrderData.delivery_address === "Collection"
                             ? ""
                             : ` R${formatCurrency(
-                                DELIVERY_FEE
+                                DELIVERY_FEE,
                               )} delivery fee and`}{" "}
                           R{formatCurrency(TRANSFER_FEE)} transfer fee)
                         </p>

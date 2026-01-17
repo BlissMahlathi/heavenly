@@ -65,6 +65,8 @@ export default function Auth() {
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                name="email"
+                autoComplete="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) =>
@@ -78,6 +80,8 @@ export default function Auth() {
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
+                name="password"
+                autoComplete="current-password"
                 type="password"
                 value={formData.password}
                 onChange={(e) =>
