@@ -69,9 +69,19 @@ export const Footer = () => {
                 <div className="p-1.5 sm:p-2 rounded-lg bg-white/20 backdrop-blur-sm">
                   <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
-                <span className="font-semibold text-sm sm:text-base">
-                  Serving the Greater Area
-                </span>
+                <div className="flex flex-col gap-1">
+                  <span className="font-semibold text-sm sm:text-base">
+                    Serving the Greater Area
+                  </span>
+                  <a
+                    href="https://www.google.com/maps?q=-22.977916493048124,30.432827287468267"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs sm:text-sm text-primary font-semibold hover:underline"
+                  >
+                    View on map
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -155,7 +165,7 @@ export const Footer = () => {
             reserved.
           </p>
           <p className="text-sm sm:text-base font-bold text-white drop-shadow-md">
-            🥧 Beaked with Love, Taste Like Heaven 🥧
+            Baked with Love, Taste Like Heaven
           </p>
         </div>
       </div>
