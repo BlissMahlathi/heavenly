@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -252,6 +252,34 @@ export const OrderForm = () => {
     flavor: "Chicken Mild" as Flavor,
     quantity: 1,
   });
+
+  useEffect(() => {
+    const handleExternalAdd = (event: Event) => {
+      const detail = (event as CustomEvent).detail as
+        | { flavor?: Flavor; quantity?: number }
+        | undefined;
+
+      if (!detail?.flavor || !(detail.flavor in FLAVORS)) {
+        return;
+      }
+
+      const quantity = Math.max(1, detail.quantity ?? 1);
+      const newItem: CartItem = {
+        id: `${detail.flavor}-${Date.now()}`,
+        flavor: detail.flavor,
+        quantity,
+        price: FLAVORS[detail.flavor],
+        total: quantity * FLAVORS[detail.flavor],
+      };
+
+      setCart((prev) => [...prev, newItem]);
+    };
+
+    window.addEventListener("pie:add-to-cart", handleExternalAdd);
+    return () => {
+      window.removeEventListener("pie:add-to-cart", handleExternalAdd);
+    };
+  }, []);
 
   // Calculate cart totals
   const cartTotal = cart.reduce((sum, item) => sum + item.total, 0);

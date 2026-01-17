@@ -1,472 +1,401 @@
+import { useState } from "react";
+import {
+  BadgePercent,
+  Beef,
+  Drumstick,
+  Flame,
+  Info,
+  ShoppingCart,
+  Sparkles,
+  Star,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Flame, Star, Heart, Beef, Drumstick } from "lucide-react";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+type FlavorName =
+  | "Chicken Mild"
+  | "Chicken Hot"
+  | "Beef Mild"
+  | "Beef Hot"
+  | "Chicken and Mushroom"
+  | "Cheesy Chicken Pie"
+  | "Chips Rolls"
+  | "Russian Roll";
+
+type MenuItem = {
+  name: FlavorName;
+  description: string;
+  price: number;
+  image: string;
+  alt: string;
+  icon: LucideIcon;
+  tag: string;
+  isNew?: boolean;
+  spicy?: boolean;
+};
+
+type FridayDeal = {
+  id: string;
+  title: string;
+  description: string;
+  items: { flavor: FlavorName; quantity: number }[];
+  badge: string;
+};
+
+const menuItems: MenuItem[] = [
+  {
+    name: "Chicken Mild",
+    description: "Golden crust, tender chicken, mild spices, and creamy gravy.",
+    price: 29.99,
+    image: "/piephone1.jpeg",
+    alt: "Chicken mild pie",
+    icon: Drumstick,
+    tag: "Chicken",
+  },
+  {
+    name: "Chicken Hot",
+    description: "Bold heat with juicy chicken and a fiery finish.",
+    price: 29.99,
+    image: "/piephone1view2.jpeg",
+    alt: "Chicken hot pie",
+    icon: Flame,
+    tag: "Chicken",
+    spicy: true,
+  },
+  {
+    name: "Beef Mild",
+    description: "Rich beef filling, savory gravy, and a flaky crust.",
+    price: 39.99,
+    image: "/piephoto1view3.jpeg",
+    alt: "Beef mild pie",
+    icon: Beef,
+    tag: "Beef",
+  },
+  {
+    name: "Beef Hot",
+    description: "Smoky beef with a spicy kick and extra flavor.",
+    price: 39.99,
+    image: "/piephoto1view3.jpeg",
+    alt: "Beef hot pie",
+    icon: Flame,
+    tag: "Beef",
+    spicy: true,
+  },
+  {
+    name: "Chicken and Mushroom",
+    description: "Creamy chicken and mushroom blend with a smooth finish.",
+    price: 34.99,
+    image: "/piephone1.jpeg",
+    alt: "Chicken and mushroom pie",
+    icon: Drumstick,
+    tag: "Chicken",
+    isNew: true,
+  },
+  {
+    name: "Cheesy Chicken Pie",
+    description: "Chicken and melted cheese in a buttery crust.",
+    price: 34.99,
+    image: "/piephone1view2.jpeg",
+    alt: "Cheesy chicken pie",
+    icon: Drumstick,
+    tag: "Chicken",
+    isNew: true,
+  },
+  {
+    name: "Chips Rolls",
+    description: "Crispy chips roll with signature seasoning.",
+    price: 24.99,
+    image: "/chipsRolls.jpeg",
+    alt: "Chips rolls",
+    icon: Star,
+    tag: "Sides",
+    isNew: true,
+  },
+  {
+    name: "Russian Roll",
+    description: "Hearty roll with classic, bold flavor.",
+    price: 19.99,
+    image: "/russianrolls.jpeg",
+    alt: "Russian roll",
+    icon: Star,
+    tag: "Sides",
+    isNew: true,
+  },
+];
+
+const fridayDeals: FridayDeal[] = [
+  {
+    id: "deal-3pies",
+    title: "Buy 3 pies and get a free drink",
+    description: "Add any 3 pies to your cart and the drink is on us.",
+    items: [{ flavor: "Chicken Mild", quantity: 3 }],
+    badge: "Mix and match",
+  },
+  {
+    id: "deal-2chicken-1beef",
+    title: "2 Chicken + 1 Beef with a free drink",
+    description: "Classic combo with a free drink every Friday.",
+    items: [
+      { flavor: "Chicken Mild", quantity: 2 },
+      { flavor: "Beef Mild", quantity: 1 },
+    ],
+    badge: "Combo favorite",
+  },
+  {
+    id: "deal-2beef-1chicken",
+    title: "2 Beef + 1 Chicken with a free drink",
+    description: "Big flavor, built for beef lovers.",
+    items: [
+      { flavor: "Beef Mild", quantity: 2 },
+      { flavor: "Chicken Mild", quantity: 1 },
+    ],
+    badge: "Beef lovers",
+  },
+];
+
+const dispatchAddToCart = (flavor: FlavorName, quantity = 1) => {
+  window.dispatchEvent(
+    new CustomEvent("pie:add-to-cart", { detail: { flavor, quantity } })
+  );
+};
 
 export const PieGallery = () => {
-  // Date-based logic for NEW badges
-  const launchDate = new Date("2026-01-11"); // January 11, 2026
-  const twoMonthsLater = new Date(launchDate);
-  twoMonthsLater.setMonth(twoMonthsLater.getMonth() + 2); // March 11, 2026
-  const currentDate = new Date();
-  const showNewBadges = currentDate < twoMonthsLater;
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
+  const [specialsOpen, setSpecialsOpen] = useState(false);
 
-  const pieFlavors = [
-    {
-      name: "Chicken Mild",
-      price: 29.99,
-      description: "Tender chicken with mild spices",
-      icon: Drumstick,
-      color: "from-orange-400 to-red-500",
-      image: "/piephone1.jpeg",
-      alt: "Chicken Mild Pie - Tender and flavorful",
-    },
-    {
-      name: "Chicken Hot",
-      price: 29.99,
-      description: "Spicy chicken with bold flavors",
-      icon: Flame,
-      color: "from-red-500 to-pink-600",
-      image: "/piephone1view2.jpeg",
-      alt: "Chicken Hot Pie - Spicy and delicious",
-    },
-    {
-      name: "Beef Mild",
-      price: 39.99,
-      description: "Premium beef with mild seasoning",
-      icon: Beef,
-      color: "from-amber-600 to-orange-700",
-      image: "/piephoto1view3.jpeg",
-      alt: "Beef Mild Pie - Rich and savory",
-    },
-    {
-      name: "Beef Hot",
-      price: 39.99,
-      description: "Spicy beef with intense flavor",
-      icon: Flame,
-      color: "from-red-600 to-red-800",
-      image: "/piephone1.jpeg",
-      alt: "Beef Hot Pie - Bold and spicy",
-    },
-    {
-      name: "Chicken and Mushroom",
-      price: 34.99,
-      description: "Creamy chicken with fresh mushrooms",
-      icon: Drumstick,
-      color: "from-yellow-400 to-orange-500",
-      image: "/piephone1.jpeg",
-      alt: "Chicken and Mushroom Pie - Fresh and savory",
-    },
-    {
-      name: "Cheesy Chicken Pie",
-      price: 34.99,
-      description: "Golden cheese melted with tender chicken",
-      icon: Drumstick,
-      color: "from-yellow-500 to-amber-600",
-      image: "/piephone1view2.jpeg",
-      alt: "Cheesy Chicken Pie - Rich and creamy",
-    },
-    {
-      name: "Chip Rolls",
-      price: 24.99,
-      description: "Crispy rolls filled with hot chips",
-      icon: Star,
-      color: "from-amber-400 to-orange-600",
-      image: "/chipsRolls.jpeg",
-      alt: "Chip Rolls - Crispy and crunchy",
-    },
-    {
-      name: "Russian Roll",
-      price: 19.99,
-      description: "Classic Russian style roll",
-      icon: Star,
-      color: "from-orange-500 to-red-600",
-      image: "/russianrolls.jpeg",
-      alt: "Russian Roll - Traditional favorite",
-    },
-  ];
+  const handleAddDeal = (deal: FridayDeal) => {
+    deal.items.forEach((item) => dispatchAddToCart(item.flavor, item.quantity));
+    setSpecialsOpen(false);
+  };
 
   return (
     <section className="relative py-20 overflow-hidden">
-      {/* Background Image with Overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: `url(/piephoto1view3.jpeg)` }}
+        style={{ backgroundImage: "url(/piephoto1view3.jpeg)" }}
       >
         <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-transparent to-background/40" />
       </div>
 
-      {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="text-center mb-16 animate-fade-in">
+        <div className="text-center mb-12 animate-fade-in">
           <Badge className="mb-4 bg-white/20 backdrop-blur-sm text-white border-white/30 px-4 py-2 text-sm font-semibold shadow-lg">
             Our Pie Collection
           </Badge>
-          <h2 className="text-4xl md:text-6xl font-extrabold mb-6 text-white drop-shadow-lg">
-            Choose Your Flavor
+          <h2 className="text-4xl md:text-6xl font-extrabold mb-4 text-white drop-shadow-lg">
+            Pick Your Menu
           </h2>
           <p className="text-lg md:text-xl text-gray-100 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-            From tender chicken to premium beef, each pie is handmade with fresh
-            ingredients, wrapped in our signature golden crust. Mix and match
-            flavors in your cart!
+            Freshly baked pies and rolls with bold flavor. Tap any item to view
+            details and add it to your cart.
           </p>
         </div>
 
-        {/* Flavor Grid - Desktop */}
-        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-16">
-          {pieFlavors.map((flavor, index) => {
-            const Icon = flavor.icon;
-            return (
-              <Card
-                key={flavor.name}
-                className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-2 border-white/20 hover:border-primary/50 bg-white/10 backdrop-blur-sm"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <CardContent className="p-0">
-                  <div className="relative aspect-square overflow-hidden">
-                    <img
-                      src={flavor.image}
-                      alt={flavor.alt}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+        <div className="max-w-6xl mx-auto mb-12">
+          <button
+            type="button"
+            onClick={() => setSpecialsOpen(true)}
+            className="w-full"
+          >
+            <Card className="border-2 border-white/20 bg-gradient-to-r from-red-600 via-red-700 to-red-800 text-white shadow-2xl overflow-hidden">
+              <CardHeader className="flex flex-col gap-3">
+                <div className="flex items-center justify-center gap-3 text-2xl md:text-3xl font-extrabold">
+                  <Sparkles className="h-7 w-7" />
+                  Friday Special Deals
+                  <Sparkles className="h-7 w-7" />
+                </div>
+                <CardDescription className="text-white/90 text-base md:text-lg">
+                  Limited offers every Friday. Tap to view deals and add to
+                  cart.
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </button>
+        </div>
 
-                    {/* Content Overlay */}
-                    <div className="absolute inset-0 flex flex-col justify-end p-6">
-                      <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div
-                            className={`p-2 rounded-full bg-gradient-to-r ${flavor.color} backdrop-blur-sm`}
-                          >
-                            <Icon className="h-5 w-5 text-white" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.name}
+                type="button"
+                onClick={() => setSelectedItem(item)}
+                className="text-left"
+              >
+                <Card className="group overflow-hidden border-2 border-white/20 bg-white/10 backdrop-blur-sm hover:border-white/40 hover:-translate-y-1 transition-all duration-300">
+                  <CardContent className="p-0">
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <img
+                        src={item.image}
+                        alt={item.alt}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4">
+                        <div className="flex items-center gap-2 text-white">
+                          <span className="p-2 rounded-full bg-white/15 backdrop-blur-sm">
+                            <Icon className="h-5 w-5" />
+                          </span>
+                          <div>
+                            <p className="text-xs uppercase tracking-wide text-white/80">
+                              {item.tag}
+                            </p>
+                            <h3 className="text-lg font-bold">{item.name}</h3>
                           </div>
-                          <h3 className="text-white text-xl font-bold">
-                            {flavor.name}
-                          </h3>
                         </div>
-                        <p className="text-gray-200 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75">
-                          {flavor.description}
-                        </p>
+                      </div>
+                      <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+                        <Badge className="bg-white/90 text-foreground font-semibold text-sm px-3 py-1">
+                          R{item.price.toFixed(2)}
+                        </Badge>
+                        {item.spicy && (
+                          <Badge className="bg-red-600/90 text-white text-xs">
+                            Hot
+                          </Badge>
+                        )}
+                        {item.isNew && (
+                          <Badge className="bg-yellow-400 text-black text-xs">
+                            New
+                          </Badge>
+                        )}
                       </div>
                     </div>
-
-                    {/* Price Badge */}
-                    <div className="absolute top-4 right-4">
-                      <Badge className="bg-accent/90 text-accent-foreground backdrop-blur-sm font-bold shadow-lg text-lg px-3 py-1">
-                        R{flavor.price}
-                      </Badge>
+                    <div className="p-4">
+                      <p className="text-sm text-gray-200 line-clamp-2">
+                        {item.description}
+                      </p>
+                      <div className="mt-4 flex items-center justify-between text-white/80 text-sm">
+                        <span className="flex items-center gap-2">
+                          <ShoppingCart className="h-4 w-4" />
+                          Tap for details
+                        </span>
+                        <span className="font-semibold text-white">
+                          R{item.price.toFixed(2)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </button>
             );
           })}
         </div>
-
-        {/* Carousel - Mobile */}
-        <div className="md:hidden max-w-7xl mx-auto mb-16 px-4">
-          <Carousel
-            opts={{
-              align: "center",
-              loop: true,
-            }}
-            plugins={[
-              Autoplay({
-                delay: 4000,
-                stopOnInteraction: true,
-              }),
-            ]}
-            className="w-full"
-          >
-            <CarouselContent>
-              {pieFlavors.map((flavor, index) => {
-                const Icon = flavor.icon;
-                return (
-                  <CarouselItem key={flavor.name}>
-                    <Card className="border-2 border-white/20 bg-white/10 backdrop-blur-sm">
-                      <CardContent className="p-0">
-                        <div className="relative aspect-square overflow-hidden">
-                          <img
-                            src={flavor.image}
-                            alt={flavor.alt}
-                            className="w-full h-full object-cover"
-                          />
-                          {/* Gradient Overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-60" />
-
-                          {/* Content Overlay */}
-                          <div className="absolute inset-0 flex flex-col justify-end p-6">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div
-                                className={`p-2 rounded-full bg-gradient-to-r ${flavor.color} backdrop-blur-sm`}
-                              >
-                                <Icon className="h-5 w-5 text-white" />
-                              </div>
-                              <h3 className="text-white text-xl font-bold">
-                                {flavor.name}
-                              </h3>
-                            </div>
-                            <p className="text-gray-200 text-sm">
-                              {flavor.description}
-                            </p>
-                          </div>
-
-                          {/* Price Badge */}
-                          <div className="absolute top-4 right-4">
-                            <Badge className="bg-accent/90 text-accent-foreground backdrop-blur-sm font-bold shadow-lg text-lg px-3 py-1">
-                              R{flavor.price}
-                            </Badge>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </CarouselItem>
-                );
-              })}
-            </CarouselContent>
-            <CarouselPrevious className="left-2" />
-            <CarouselNext className="right-2" />
-          </Carousel>
-        </div>
-
-        {/* Call to Action Box */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <Card className="overflow-hidden border-2 border-white/30 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-2xl">
-            <CardContent className="p-8 md:p-12 text-center">
-              <h3 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Chicken Pies: R29.99 | Beef Pies: R39.99
-              </h3>
-              <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-                Mix and match any combination in your cart!
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                {/* Original Items */}
-                <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-orange-50 dark:bg-orange-950/30">
-                  <Drumstick className="h-6 w-6 text-orange-600" />
-                  <span className="font-semibold text-orange-700 dark:text-orange-300">
-                    Chicken Mild
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300 font-medium">
-                    R29.99
-                  </span>
-                </div>
-                <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-red-50 dark:bg-red-950/30">
-                  <Flame className="h-6 w-6 text-red-600" />
-                  <span className="font-semibold text-red-700 dark:text-red-300">
-                    Chicken Hot
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300 font-medium">
-                    R29.99
-                  </span>
-                </div>
-                <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-amber-50 dark:bg-amber-950/30">
-                  <Beef className="h-6 w-6 text-amber-600" />
-                  <span className="font-semibold text-amber-700 dark:text-amber-300">
-                    Beef Mild
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300 font-medium">
-                    R39.99
-                  </span>
-                </div>
-                <div className="flex flex-col items-center gap-2 p-4 rounded-lg bg-red-50 dark:bg-red-950/30">
-                  <Flame className="h-6 w-6 text-red-600" />
-                  <span className="font-semibold text-red-700 dark:text-red-300">
-                    Beef Hot
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300 font-medium">
-                    R39.99
-                  </span>
-                </div>
-
-                {/* New Items with "NEW" Badge */}
-                <div className="relative flex flex-col items-center gap-2 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-400 dark:border-yellow-600">
-                  {showNewBadges && (
-                    <div
-                      className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
-                      style={{
-                        transform: "rotate(45deg)",
-                        transformOrigin: "center",
-                      }}
-                    >
-                      NEW
-                    </div>
-                  )}
-                  <Drumstick className="h-6 w-6 text-yellow-600" />
-                  <span className="font-semibold text-yellow-700 dark:text-yellow-300">
-                    Chicken & Mushroom
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300 font-medium">
-                    R34.99
-                  </span>
-                </div>
-                <div className="relative flex flex-col items-center gap-2 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-400 dark:border-yellow-600">
-                  {showNewBadges && (
-                    <div
-                      className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
-                      style={{
-                        transform: "rotate(45deg)",
-                        transformOrigin: "center",
-                      }}
-                    >
-                      NEW
-                    </div>
-                  )}
-                  <Drumstick className="h-6 w-6 text-yellow-600" />
-                  <span className="font-semibold text-yellow-700 dark:text-yellow-300">
-                    Cheesy Chicken
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300 font-medium">
-                    R34.99
-                  </span>
-                </div>
-                <div className="relative flex flex-col items-center gap-2 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-400 dark:border-yellow-600">
-                  {showNewBadges && (
-                    <div
-                      className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
-                      style={{
-                        transform: "rotate(45deg)",
-                        transformOrigin: "center",
-                      }}
-                    >
-                      NEW
-                    </div>
-                  )}
-                  <Star className="h-6 w-6 text-yellow-600" />
-                  <span className="font-semibold text-yellow-700 dark:text-yellow-300">
-                    Chip Rolls
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300 font-medium">
-                    R24.99
-                  </span>
-                </div>
-                <div className="relative flex flex-col items-center gap-2 p-4 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border-2 border-yellow-400 dark:border-yellow-600">
-                  {showNewBadges && (
-                    <div
-                      className="absolute -top-3 -right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
-                      style={{
-                        transform: "rotate(45deg)",
-                        transformOrigin: "center",
-                      }}
-                    >
-                      NEW
-                    </div>
-                  )}
-                  <Star className="h-6 w-6 text-yellow-600" />
-                  <span className="font-semibold text-yellow-700 dark:text-yellow-300">
-                    Russian Roll
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300 font-medium">
-                    R19.99
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Friday Special Deals */}
-        <div className="max-w-4xl mx-auto">
-          <Card className="overflow-hidden border-2 border-yellow-400 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-2xl">
-            <CardHeader className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 text-white py-6 sm:py-8">
-              <div className="flex items-center justify-center gap-3 mb-2">
-                <Star className="h-8 w-8 fill-white" />
-                <CardTitle className="text-3xl md:text-4xl font-extrabold">
-                  🎉 FRIDAY SPECIAL DEALS 🎉
-                </CardTitle>
-                <Star className="h-8 w-8 fill-white" />
-              </div>
-              <CardDescription className="text-white text-center text-lg font-semibold mt-2">
-                Available Every Friday - Limited Time Offers!
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-8 md:p-12">
-              <div className="space-y-6">
-                {/* Deal 1 */}
-                <div className="bg-white dark:bg-gray-900/50 border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
-                  <div className="flex items-start gap-4">
-                    <div className="text-3xl">🥧</div>
-                    <div className="flex-1">
-                      <h4 className="text-xl md:text-2xl font-bold text-foreground mb-2">
-                        Buy 3 Pies - Get FREE Drink! 🥤
-                      </h4>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        Order any 3 pies of your choice and receive a
-                        complimentary drink on us!
-                      </p>
-                      <div className="mt-3 inline-block bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
-                        Save with every 3 pies!
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Deal 2 */}
-                <div className="bg-white dark:bg-gray-900/50 border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
-                  <div className="flex items-start gap-4">
-                    <div className="text-3xl">🍗</div>
-                    <div className="flex-1">
-                      <h4 className="text-xl md:text-2xl font-bold text-foreground mb-2">
-                        2 Chicken + 1 Beef Pie = FREE Drink! 🥤
-                      </h4>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        Get 2 Chicken Pies and 1 Beef Pie in one order and enjoy
-                        a free drink!
-                      </p>
-                      <div className="mt-3 inline-block bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
-                        Perfect combo deal!
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Deal 3 */}
-                <div className="bg-white dark:bg-gray-900/50 border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
-                  <div className="flex items-start gap-4">
-                    <div className="text-3xl">🥩</div>
-                    <div className="flex-1">
-                      <h4 className="text-xl md:text-2xl font-bold text-foreground mb-2">
-                        2 Beef + 1 Chicken Pie = FREE Drink! 🥤
-                      </h4>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        Get 2 Beef Pies and 1 Chicken Pie in one order and enjoy
-                        a free drink!
-                      </p>
-                      <div className="mt-3 inline-block bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 px-3 py-1 rounded-full text-sm font-semibold">
-                        Beef lovers special!
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Terms */}
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 p-4 rounded text-sm text-gray-700 dark:text-gray-200 italic">
-                  <p>
-                    💡 <strong>Tip:</strong> Mix and match any Chicken and Beef
-                    varieties to qualify for these amazing Friday deals! Order
-                    now and save!
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
+
+      <Dialog
+        open={Boolean(selectedItem)}
+        onOpenChange={(open) => {
+          if (!open) setSelectedItem(null);
+        }}
+      >
+        <DialogContent className="max-w-2xl">
+          {selectedItem && (
+            <div className="grid gap-6 md:grid-cols-[1.2fr_1fr]">
+              <div className="overflow-hidden rounded-xl">
+                <img
+                  src={selectedItem.image}
+                  alt={selectedItem.alt}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="space-y-4">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-bold">
+                    {selectedItem.name}
+                  </DialogTitle>
+                  <DialogDescription className="text-base text-muted-foreground">
+                    {selectedItem.description}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className="bg-muted text-foreground">
+                    {selectedItem.tag}
+                  </Badge>
+                  {selectedItem.spicy && (
+                    <Badge className="bg-red-600 text-white">Hot</Badge>
+                  )}
+                  {selectedItem.isNew && (
+                    <Badge className="bg-yellow-400 text-black">New</Badge>
+                  )}
+                </div>
+                <div className="text-3xl font-extrabold text-foreground">
+                  R{selectedItem.price.toFixed(2)}
+                </div>
+                <Button
+                  className="w-full"
+                  onClick={() => {
+                    dispatchAddToCart(selectedItem.name, 1);
+                    setSelectedItem(null);
+                  }}
+                >
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  Add to cart
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={specialsOpen} onOpenChange={setSpecialsOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-extrabold flex items-center gap-2">
+              <BadgePercent className="h-6 w-6 text-primary" />
+              Friday Special Deals
+            </DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground">
+              Deals run every Friday. Add a deal to your cart and customize in
+              the order form.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4">
+            {fridayDeals.map((deal) => (
+              <Card key={deal.id} className="border border-border">
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div className="space-y-2">
+                      <h4 className="text-lg font-bold text-foreground">
+                        {deal.title}
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        {deal.description}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Info className="h-4 w-4" />
+                        {deal.badge}
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => handleAddDeal(deal)}
+                      className="shrink-0"
+                    >
+                      <ShoppingCart className="mr-2 h-4 w-4" />
+                      Add deal to cart
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

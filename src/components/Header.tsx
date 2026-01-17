@@ -26,7 +26,7 @@ export const Header = () => {
                 Heavenly Pies
               </h1>
               <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground font-medium hidden xs:block">
-                Baked with Love, Tastes Like Heaven
+                🥧 Beaked with Love, Taste Like Heaven 🥧
               </p>
             </div>
           </div>

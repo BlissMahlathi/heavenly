@@ -85,8 +85,8 @@ export const Footer = () => {
                 <span className="font-semibold text-white text-sm sm:text-base">
                   Saturday
                 </span>
-                <span className="text-gray-300 font-bold text-xs sm:text-sm">
-                  Closed
+                <span className="text-primary font-bold text-xs sm:text-sm">
+                  9:00 AM - 11:00 PM
                 </span>
               </div>
               <div className="flex justify-between items-center p-2 sm:p-3 rounded-lg bg-white/10 backdrop-blur-sm">
@@ -146,7 +146,7 @@ export const Footer = () => {
             reserved.
           </p>
           <p className="text-sm sm:text-base font-bold text-white drop-shadow-md">
-            🥧 Baked with Love, Tastes Like Heaven 🥧
+            🥧 Beaked with Love, Taste Like Heaven 🥧
           </p>
         </div>
       </div>
