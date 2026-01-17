@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ChefHat, Clock, MapPin } from "lucide-react";
+import { Clock, MapPin, ShieldCheck, Star } from "lucide-react";
 
 export const Hero = () => {
   const scrollToOrder = () => {
@@ -9,84 +9,123 @@ export const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-[500px] sm:min-h-[600px] lg:min-h-[700px] flex items-center justify-center overflow-hidden">
-      {/* Background Image with Overlay */}
-      <div
-        className="absolute inset-0 bg-cover bg-center hero-bg"
-        style={{ backgroundImage: `url(/piephone1.jpeg)` }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/40" />
-      </div>
-
-      {/* Content */}
-      <div className="container mx-auto px-4 py-12 sm:py-16 lg:py-24 relative z-10">
-        <div className="max-w-3xl">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-primary/20 backdrop-blur-sm border border-primary/30 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 mb-4 sm:mb-6 animate-fade-in">
-            <ChefHat className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
-            <span className="text-xs sm:text-sm font-semibold text-primary">
-              Freshly Baked Daily
-            </span>
-          </div>
-
-          {/* Main Heading */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-extrabold mb-4 sm:mb-6 text-white leading-tight animate-slide-up">
-            Delicious Handmade <br />
-            <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
-              Chicken & Beef Pies
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 mb-4 sm:mb-6 font-medium animate-slide-up-delay">
-            Fresh, handmade pies crafted with love and delivered hot to your
-            door
-          </p>
-
-          {/* Features */}
-          <div className="flex flex-wrap gap-2 sm:gap-4 mb-6 sm:mb-8 animate-fade-in-delay">
-            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5 sm:px-4 sm:py-2">
-              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
-              <span className="text-white font-medium text-sm sm:text-base">
-                Quick Delivery
+    <section className="relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/30" />
+      <div className="container mx-auto px-4 py-12 sm:py-16 lg:py-20 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          {/* Left: Copy */}
+          <div className="space-y-5">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5">
+              <ShieldCheck className="h-4 w-4 text-primary" />
+              <span className="text-xs sm:text-sm font-semibold text-primary">
+                Trusted Local Bakery
               </span>
             </div>
-            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5 sm:px-4 sm:py-2">
-              <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-accent" />
-              <span className="text-white font-medium text-sm sm:text-base">
-                Local Service
+
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground">
+              Shop Freshly Baked
+              <span className="text-primary"> Chicken & Beef Pies</span>
+            </h1>
+
+            <p className="text-base sm:text-lg text-muted-foreground">
+              Order in minutes. Hot, flaky pies delivered fast or ready for
+              pickup.
+            </p>
+
+            <div className="flex flex-wrap gap-3">
+              <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium">
+                <Clock className="h-4 w-4 text-primary" />
+                Same-day delivery
               </span>
+              <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium">
+                <MapPin className="h-4 w-4 text-primary" />
+                Local area service
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium">
+                <Star className="h-4 w-4 text-amber-500" />
+                4.8 rating
+              </span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                onClick={scrollToOrder}
+                size="lg"
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Start Order
+              </Button>
+              <Button
+                onClick={scrollToOrder}
+                size="lg"
+                variant="outline"
+                className="border-primary/40 text-primary hover:bg-primary/10"
+              >
+                View Menu
+              </Button>
             </div>
           </div>
 
-          {/* Price & CTA */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 animate-slide-up-delay-2">
-            <div className="bg-gradient-to-r from-primary to-secondary rounded-2xl px-6 py-3 sm:px-8 sm:py-4 shadow-2xl text-center sm:text-left">
-              <p className="text-xs sm:text-sm text-primary-foreground/90 font-medium">
-                From
-              </p>
-              <p className="text-3xl sm:text-4xl font-bold text-primary-foreground">
-                R30 - R40
-              </p>
-              <p className="text-xs sm:text-sm text-primary-foreground/90">
-                per pie
-              </p>
+          {/* Right: Product Card */}
+          <div className="relative">
+            <div className="absolute -inset-4 bg-primary/10 blur-3xl rounded-full" />
+            <div className="relative bg-background border border-border rounded-2xl shadow-2xl overflow-hidden">
+              <div className="aspect-[4/3] bg-muted">
+                <img
+                  src="/piephone1.jpeg"
+                  alt="Freshly baked pies"
+                  className="h-full w-full object-cover"
+                  loading="eager"
+                />
+              </div>
+              <div className="p-5 sm:p-6 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg sm:text-xl font-bold">
+                    Chicken & Beef Pie
+                  </h2>
+                  <span className="text-sm font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+                    In stock
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Flaky crust, rich filling, baked fresh daily.
+                </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-2xl font-extrabold text-primary">
+                      R30
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {" "}
+                      per pie
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 text-amber-500">
+                    <Star className="h-4 w-4 fill-current" />
+                    <Star className="h-4 w-4 fill-current" />
+                    <Star className="h-4 w-4 fill-current" />
+                    <Star className="h-4 w-4 fill-current" />
+                    <Star className="h-4 w-4" />
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <Button onClick={scrollToOrder} size="lg" className="flex-1">
+                    Add to Cart
+                  </Button>
+                  <Button
+                    onClick={scrollToOrder}
+                    size="lg"
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    Customize
+                  </Button>
+                </div>
+              </div>
             </div>
-
-            <Button
-              onClick={scrollToOrder}
-              size="lg"
-              className="w-full sm:w-auto bg-white text-primary hover:bg-gray-100 font-bold text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-105 rounded-xl"
-            >
-              Order Now
-            </Button>
           </div>
         </div>
       </div>
-
-      {/* Decorative Elements */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 sm:h-32 bg-gradient-to-t from-background to-transparent z-10" />
     </section>
   );
 };
