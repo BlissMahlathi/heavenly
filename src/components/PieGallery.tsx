@@ -235,8 +235,8 @@ export const PieGallery = () => {
                     Tap to view deals
                   </Badge>
                   <CardDescription className="text-white/90 text-base md:text-lg">
-                    Limited offers every Friday. Tap to view deals and add to
-                    cart.
+                    Limited offers every Friday. Add a deal to your cart and
+                    customize in the order form.
                   </CardDescription>
                 </div>
               </CardHeader>
