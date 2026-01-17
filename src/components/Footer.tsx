@@ -6,11 +6,20 @@ import {
   Instagram,
   MessageCircle,
   Heart,
+  ShoppingCart,
 } from "lucide-react";
 
 export const Footer = () => {
   return (
     <footer className="relative border-t-2 border-primary/30 mt-10 sm:mt-16 lg:mt-20 overflow-hidden">
+      <a
+        href="#order-section"
+        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-to-r from-primary to-secondary text-white shadow-2xl flex items-center justify-center hover:scale-110 transition-transform"
+        aria-label="Go to cart"
+        title="Go to cart"
+      >
+        <ShoppingCart className="h-6 w-6" />
+      </a>
       {/* Background Image with Overlay */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-fixed"

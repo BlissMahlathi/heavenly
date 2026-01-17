@@ -29,6 +29,7 @@ import type { Json } from "@/integrations/supabase/types";
 
 const PIE_PRICE = 30;
 const TRANSFER_FEE = 2;
+const DELIVERY_FEE = 10;
 const formatCurrency = (value: number) => value.toFixed(2);
 
 // Define cart item type
@@ -289,7 +290,8 @@ export const OrderForm = () => {
   // Calculate cart totals
   const cartTotal = cart.reduce((sum, item) => sum + item.total, 0);
   const transferFee = formData.paymentMethod === "eft" ? TRANSFER_FEE : 0;
-  const finalTotal = cartTotal + transferFee;
+  const deliveryFee = cart.length > 0 ? DELIVERY_FEE : 0;
+  const finalTotal = cartTotal + transferFee + deliveryFee;
   const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
   const calculatedChange =
     changeNeeded && formData.customerAmount
@@ -540,6 +542,10 @@ export const OrderForm = () => {
                           R{formatCurrency(cartTotal)}
                         </span>
                       </div>
+                      <div className="flex justify-between items-center text-xs sm:text-sm text-muted-foreground mt-1">
+                        <span>+ Delivery fee:</span>
+                        <span>R{formatCurrency(DELIVERY_FEE)}</span>
+                      </div>
                       {formData.paymentMethod === "eft" && (
                         <div className="flex justify-between items-center text-xs sm:text-sm text-muted-foreground mt-1">
                           <span>+ Transfer fee:</span>
@@ -763,7 +769,8 @@ export const OrderForm = () => {
                               <span className="font-bold">
                                 R{formatCurrency(finalTotal)}
                               </span>{" "}
-                              (includes R{formatCurrency(TRANSFER_FEE)} transfer
+                              (includes R{formatCurrency(DELIVERY_FEE)} delivery
+                              fee and R{formatCurrency(TRANSFER_FEE)} transfer
                               fee)
                             </li>
                             <li>
@@ -964,8 +971,8 @@ export const OrderForm = () => {
                       </p>
                       {pendingOrderData.payment_method === "eft" && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          (Includes R{formatCurrency(TRANSFER_FEE)} transfer
-                          fee)
+                          (Includes R{formatCurrency(DELIVERY_FEE)} delivery fee
+                          and R{formatCurrency(TRANSFER_FEE)} transfer fee)
                         </p>
                       )}
                     </div>
