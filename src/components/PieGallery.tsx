@@ -34,7 +34,8 @@ type FlavorName =
   | "Chicken and Mushroom"
   | "Cheesy Chicken Pie"
   | "Chips Rolls"
-  | "Russian Roll";
+  | "Russian Roll"
+  | "Wors Rolls";
 
 type MenuItem = {
   name: FlavorName;
@@ -135,6 +136,16 @@ const menuItems: MenuItem[] = [
     tag: "Sides",
     isNew: true,
   },
+  {
+    name: "Wors Rolls",
+    description: "Grilled wors roll with a smoky, savory bite.",
+    price: 24.99,
+    image: "/worsrolls.jpeg",
+    alt: "Wors rolls",
+    icon: Star,
+    tag: "Sides",
+    isNew: true,
+  },
 ];
 
 const fridayDeals: FridayDeal[] = [
@@ -219,10 +230,15 @@ export const PieGallery = () => {
                   Friday Special Deals
                   <Sparkles className="h-7 w-7" />
                 </div>
-                <CardDescription className="text-white/90 text-base md:text-lg">
-                  Limited offers every Friday. Tap to view deals and add to
-                  cart.
-                </CardDescription>
+                <div className="flex flex-col items-center gap-2">
+                  <Badge className="bg-white text-red-700 font-bold tracking-wide px-4 py-1 text-xs uppercase shadow-lg">
+                    Tap to view deals
+                  </Badge>
+                  <CardDescription className="text-white/90 text-base md:text-lg">
+                    Limited offers every Friday. Tap to view deals and add to
+                    cart.
+                  </CardDescription>
+                </div>
               </CardHeader>
             </Card>
           </button>

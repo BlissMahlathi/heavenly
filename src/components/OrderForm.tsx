@@ -49,6 +49,7 @@ const FLAVORS = {
   "Cheesy Chicken Pie": 34.99,
   "Chips Rolls": 24.99,
   "Russian Roll": 19.99,
+  "Wors Rolls": 24.99,
 } as const;
 
 type Flavor = keyof typeof FLAVORS;
