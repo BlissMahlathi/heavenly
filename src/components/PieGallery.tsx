@@ -300,7 +300,7 @@ export const PieGallery = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+                      <div className="absolute top-3 left-3 flex flex-col gap-2 items-start">
                         <Badge className="bg-white/90 text-foreground font-semibold text-sm px-3 py-1">
                           R{item.price.toFixed(2)}
                         </Badge>
@@ -315,8 +315,8 @@ export const PieGallery = () => {
                           </Badge>
                         )}
                       </div>
-                      <div className="absolute -left-10 top-4 -rotate-[35deg]">
-                        <span className="bg-red-600 text-white text-[10px] font-bold px-4 py-1 uppercase tracking-widest shadow-lg">
+                      <div className="absolute top-0 right-0 translate-x-[28%] -translate-y-[28%] rotate-[135deg] origin-top-right">
+                        <span className="bg-gradient-to-r from-red-600 via-red-500 to-red-700 text-white text-[10px] font-extrabold px-4 py-1 uppercase tracking-[0.2em] shadow-[0_8px_20px_rgba(220,38,38,0.35)] border border-white/30 rounded-sm">
                           {item.categoryLabel}
                         </span>
                       </div>
