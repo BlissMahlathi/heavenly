@@ -102,6 +102,13 @@ const sendWhatsAppNotification = (order: {
       )} | Change needed: R${formatCurrency(order.calculated_change || 0)}`
     : "No change needed";
 
+  const fulfillmentLabel =
+    order.delivery_address === "Collection" ? "Collection" : "Delivery";
+  const addressLine =
+    order.delivery_address === "Collection"
+      ? "Collection"
+      : order.delivery_address;
+
   // Build order items list - handle both CartItem[] and Json types
   let orderItems = "";
   if (order.cart_items && Array.isArray(order.cart_items)) {
@@ -130,8 +137,10 @@ ${orderItems}
 
 💵 Total: R${formatCurrency(order.total_price)} (${order.quantity} pie(s) total)
 
+🚚 Fulfillment: ${fulfillmentLabel}
+
 📍 Delivery Address:
-${order.delivery_address}
+${addressLine}
 
 💳 Payment: ${
     order.payment_method === "cash" ? "Cash on Delivery" : "EFT/PayShap"
@@ -172,6 +181,13 @@ const sendAdminNotification = async (order: {
         )}\n💰 Change needed: R${formatCurrency(order.calculated_change || 0)}`
       : "\n✅ No change needed";
 
+    const fulfillmentLabel =
+      order.delivery_address === "Collection" ? "Collection" : "Delivery";
+    const addressLine =
+      order.delivery_address === "Collection"
+        ? "Collection"
+        : order.delivery_address;
+
     // Build order items list
     const orderItems =
       order.cart_items && Array.isArray(order.cart_items)
@@ -199,8 +215,10 @@ ${orderItems}
 
 💵 Total: R${formatCurrency(order.total_price)} (${order.quantity} pie(s) total)
 
+🚚 Fulfillment: ${fulfillmentLabel}
+
 📍 Delivery Address:
-${order.delivery_address}
+${addressLine}
 
 💳 Payment Method: ${
       order.payment_method === "cash" ? "Cash on Delivery" : "EFT/PayShap"
@@ -254,6 +272,7 @@ export const OrderForm = () => {
     phone: "",
     email: "",
     address: "",
+    fulfillment: "delivery",
     paymentMethod: "cash",
     customerAmount: "",
     notes: "",
@@ -289,8 +308,9 @@ export const OrderForm = () => {
 
   // Calculate cart totals
   const cartTotal = cart.reduce((sum, item) => sum + item.total, 0);
+  const isDelivery = formData.fulfillment === "delivery";
   const transferFee = formData.paymentMethod === "eft" ? TRANSFER_FEE : 0;
-  const deliveryFee = cart.length > 0 ? DELIVERY_FEE : 0;
+  const deliveryFee = isDelivery && cart.length > 0 ? DELIVERY_FEE : 0;
   const finalTotal = cartTotal + transferFee + deliveryFee;
   const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
   const calculatedChange =
@@ -322,7 +342,11 @@ export const OrderForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.phone || !formData.address) {
+    if (
+      !formData.name ||
+      !formData.phone ||
+      (isDelivery && !formData.address)
+    ) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -354,7 +378,7 @@ export const OrderForm = () => {
       cart_items: cart,
       total_quantity: totalQuantity,
       total_price: finalTotal,
-      delivery_address: formData.address,
+      delivery_address: isDelivery ? formData.address : "Collection",
       payment_method: formData.paymentMethod,
       change_needed: changeNeeded,
       customer_amount: changeNeeded ? Number(formData.customerAmount) : null,
@@ -423,6 +447,7 @@ export const OrderForm = () => {
         phone: "",
         email: "",
         address: "",
+        fulfillment: "delivery",
         paymentMethod: "cash",
         customerAmount: "",
         notes: "",
@@ -542,10 +567,12 @@ export const OrderForm = () => {
                           R{formatCurrency(cartTotal)}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center text-xs sm:text-sm text-muted-foreground mt-1">
-                        <span>+ Delivery fee:</span>
-                        <span>R{formatCurrency(DELIVERY_FEE)}</span>
-                      </div>
+                      {isDelivery && (
+                        <div className="flex justify-between items-center text-xs sm:text-sm text-muted-foreground mt-1">
+                          <span>+ Delivery fee:</span>
+                          <span>R{formatCurrency(DELIVERY_FEE)}</span>
+                        </div>
+                      )}
                       {formData.paymentMethod === "eft" && (
                         <div className="flex justify-between items-center text-xs sm:text-sm text-muted-foreground mt-1">
                           <span>+ Transfer fee:</span>
@@ -627,26 +654,73 @@ export const OrderForm = () => {
                 </div>
               </div>
 
-              {/* Delivery Address */}
-              <div>
-                <Label
-                  htmlFor="address"
-                  className="text-sm font-semibold text-foreground mb-2 block"
-                >
-                  Delivery Address *
+              {/* Order Type */}
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold text-foreground block">
+                  Order Type *
                 </Label>
-                <Textarea
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) =>
-                    setFormData({ ...formData, address: e.target.value })
+                <RadioGroup
+                  value={formData.fulfillment}
+                  onValueChange={(value) =>
+                    setFormData({
+                      ...formData,
+                      fulfillment: value,
+                      address: value === "collection" ? "" : formData.address,
+                    })
                   }
-                  placeholder="RES"
-                  required
-                  rows={3}
-                  className="resize-none border-2 border-primary/20 focus:border-primary transition-colors"
-                />
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                >
+                  <div className="flex items-center space-x-3 bg-gradient-to-r from-muted/80 to-muted/50 p-4 rounded-xl border-2 border-primary/20 hover:border-primary/40 transition-colors cursor-pointer">
+                    <RadioGroupItem
+                      value="delivery"
+                      id="fulfillment-delivery"
+                      className="h-5 w-5"
+                    />
+                    <Label
+                      htmlFor="fulfillment-delivery"
+                      className="cursor-pointer font-semibold flex-1"
+                    >
+                      Delivery
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-3 bg-gradient-to-r from-muted/80 to-muted/50 p-4 rounded-xl border-2 border-primary/20 hover:border-primary/40 transition-colors cursor-pointer">
+                    <RadioGroupItem
+                      value="collection"
+                      id="fulfillment-collection"
+                      className="h-5 w-5"
+                    />
+                    <Label
+                      htmlFor="fulfillment-collection"
+                      className="cursor-pointer font-semibold flex-1"
+                    >
+                      Collection
+                    </Label>
+                  </div>
+                </RadioGroup>
               </div>
+
+              {/* Delivery Address */}
+              {isDelivery && (
+                <div>
+                  <Label
+                    htmlFor="address"
+                    className="text-sm font-semibold text-foreground mb-2 block"
+                  >
+                    Delivery Address *
+                  </Label>
+                  <Textarea
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) =>
+                      setFormData({ ...formData, address: e.target.value })
+                    }
+                    placeholder="RES"
+                    required
+                    rows={3}
+                    className="resize-none border-2 border-primary/20 focus:border-primary transition-colors"
+                  />
+                </div>
+              )}
 
               {/* Payment Method */}
               <div className="space-y-4">
@@ -769,9 +843,13 @@ export const OrderForm = () => {
                               <span className="font-bold">
                                 R{formatCurrency(finalTotal)}
                               </span>{" "}
-                              (includes R{formatCurrency(DELIVERY_FEE)} delivery
-                              fee and R{formatCurrency(TRANSFER_FEE)} transfer
-                              fee)
+                              (includes
+                              {isDelivery
+                                ? ` R${formatCurrency(
+                                    DELIVERY_FEE
+                                  )} delivery fee and`
+                                : ""}{" "}
+                              R{formatCurrency(TRANSFER_FEE)} transfer fee)
                             </li>
                             <li>
                               • <strong>Capitec users:</strong> Pay to
@@ -971,8 +1049,13 @@ export const OrderForm = () => {
                       </p>
                       {pendingOrderData.payment_method === "eft" && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          (Includes R{formatCurrency(DELIVERY_FEE)} delivery fee
-                          and R{formatCurrency(TRANSFER_FEE)} transfer fee)
+                          (Includes
+                          {pendingOrderData.delivery_address === "Collection"
+                            ? ""
+                            : ` R${formatCurrency(
+                                DELIVERY_FEE
+                              )} delivery fee and`}{" "}
+                          R{formatCurrency(TRANSFER_FEE)} transfer fee)
                         </p>
                       )}
                     </div>
@@ -980,7 +1063,9 @@ export const OrderForm = () => {
 
                   <div className="pt-3 border-t">
                     <p className="text-sm text-muted-foreground">
-                      Delivery Address
+                      {pendingOrderData.delivery_address === "Collection"
+                        ? "Collection"
+                        : "Delivery Address"}
                     </p>
                     <p className="font-semibold">
                       {pendingOrderData.delivery_address}
