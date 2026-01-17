@@ -42,6 +42,8 @@ type FlavorName =
 
 type MenuItem = {
   name: FlavorName;
+  displayName: string;
+  categoryLabel: "Pie" | "Rolls";
   description: string;
   price: number;
   image: string;
@@ -63,6 +65,8 @@ type FridayDeal = {
 const menuItems: MenuItem[] = [
   {
     name: "Chicken Mild",
+    displayName: "Chicken Mild Pie",
+    categoryLabel: "Pie",
     description: "Golden crust, tender chicken, mild spices, and creamy gravy.",
     price: 29.99,
     image: "/piephone1.jpeg",
@@ -72,6 +76,8 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Chicken Hot",
+    displayName: "Chicken Hot Pie",
+    categoryLabel: "Pie",
     description: "Bold heat with juicy chicken and a fiery finish.",
     price: 29.99,
     image: "/piephone1view2.jpeg",
@@ -82,6 +88,8 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Beef Mild",
+    displayName: "Beef Mild Pie",
+    categoryLabel: "Pie",
     description: "Rich beef filling, savory gravy, and a flaky crust.",
     price: 39.99,
     image: "/piephoto1view3.jpeg",
@@ -91,6 +99,8 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Beef Hot",
+    displayName: "Beef Hot Pie",
+    categoryLabel: "Pie",
     description: "Smoky beef with a spicy kick and extra flavor.",
     price: 39.99,
     image: "/piephoto1view3.jpeg",
@@ -101,6 +111,8 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Chicken and Mushroom",
+    displayName: "Chicken & Mushroom Pie",
+    categoryLabel: "Pie",
     description: "Creamy chicken and mushroom blend with a smooth finish.",
     price: 34.99,
     image: "/piephone1.jpeg",
@@ -111,6 +123,8 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Cheesy Chicken Pie",
+    displayName: "Cheesy Chicken Pie",
+    categoryLabel: "Pie",
     description: "Chicken and melted cheese in a buttery crust.",
     price: 34.99,
     image: "/piephone1view2.jpeg",
@@ -121,6 +135,8 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Chips Rolls",
+    displayName: "Chips Rolls",
+    categoryLabel: "Rolls",
     description: "Crispy chips roll with signature seasoning.",
     price: 24.99,
     image: "/chipsRolls.jpeg",
@@ -131,6 +147,8 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Russian Roll",
+    displayName: "Russian Roll",
+    categoryLabel: "Rolls",
     description: "Hearty roll with classic, bold flavor.",
     price: 19.99,
     image: "/russianrolls.jpeg",
@@ -141,6 +159,8 @@ const menuItems: MenuItem[] = [
   },
   {
     name: "Wors Rolls",
+    displayName: "Wors Rolls",
+    categoryLabel: "Rolls",
     description: "Grilled wors roll filled with chips and smoky flavor.",
     price: 29.0,
     image: "/worsrolls.jpeg",
@@ -274,7 +294,9 @@ export const PieGallery = () => {
                             <p className="text-xs uppercase tracking-wide text-white/80">
                               {item.tag}
                             </p>
-                            <h3 className="text-lg font-bold">{item.name}</h3>
+                            <h3 className="text-lg font-bold">
+                              {item.displayName}
+                            </h3>
                           </div>
                         </div>
                       </div>
@@ -292,6 +314,11 @@ export const PieGallery = () => {
                             New
                           </Badge>
                         )}
+                      </div>
+                      <div className="absolute -left-10 top-4 -rotate-[35deg]">
+                        <span className="bg-red-600 text-white text-[10px] font-bold px-4 py-1 uppercase tracking-widest shadow-lg">
+                          {item.categoryLabel}
+                        </span>
                       </div>
                     </div>
                     <div className="p-4">
@@ -338,7 +365,7 @@ export const PieGallery = () => {
               <div className="space-y-4">
                 <DialogHeader>
                   <DialogTitle className="text-2xl font-bold">
-                    {selectedItem.name}
+                    {selectedItem.displayName}
                   </DialogTitle>
                   <DialogDescription className="text-base text-muted-foreground">
                     {selectedItem.description}
