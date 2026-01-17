@@ -153,7 +153,7 @@ ${order.special_notes ? `📝 Notes: ${order.special_notes}` : ""}`;
   const whatsappUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(
     message,
   )}`;
-  window.open(whatsappUrl, "_blank");
+  window.open(whatsappUrl, "_blank", "noopener,noreferrer");
 };
 
 // Function to send notification to admin
