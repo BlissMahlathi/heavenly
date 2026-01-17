@@ -198,7 +198,7 @@ const fridayDeals: FridayDeal[] = [
 
 const dispatchAddToCart = (flavor: FlavorName, quantity = 1) => {
   window.dispatchEvent(
-    new CustomEvent("pie:add-to-cart", { detail: { flavor, quantity } })
+    new CustomEvent("pie:add-to-cart", { detail: { flavor, quantity } }),
   );
 };
 
@@ -283,6 +283,8 @@ export const PieGallery = () => {
                         src={item.image}
                         alt={item.alt}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                        decoding="async"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -360,6 +362,8 @@ export const PieGallery = () => {
                   src={selectedItem.image}
                   alt={selectedItem.alt}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <div className="space-y-4">

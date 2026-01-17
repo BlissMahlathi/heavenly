@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/logo.png" />
+    <link rel="preload" as="image" href="/piephone1.jpeg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Heavenly Pies| Order Delicious Chicken n Pepper Pies</title>
     <meta
@@ -11,6 +12,7 @@
     />
     <meta name="robots" content="index,follow" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="theme-color" content="#F59E0B" />
     <meta name="msapplication-TileColor" content="#F59E0B" />
     <meta name="author" content="Heavenly Pies" />
 
@@ -38,6 +40,72 @@
       content="Order fresh pies at R30 each with fast delivery. Bakes with Love, Tastes Like Heaven."
     />
     <meta name="twitter:image" content="/piephone1.jpeg" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "LocalBusiness",
+            "name": "Heavenly Pies",
+            "description": "Baked with love, tastes like heaven. Order fresh pies with fast delivery or pickup.",
+            "image": "/piephone1.jpeg",
+            "telephone": "+27663621868",
+            "email": "renoldamaenetja7@gmail.com",
+            "priceRange": "R30-R40",
+            "servesCuisine": ["Bakery", "Pie"],
+            "openingHoursSpecification": [
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": [
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday"
+                ],
+                "opens": "09:00",
+                "closes": "22:00"
+              },
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": "Saturday",
+                "opens": "09:00",
+                "closes": "21:00"
+              }
+            ],
+            "sameAs": [
+              "https://facebook.com/heavenlypies",
+              "https://instagram.com/heavenlypies",
+              "https://wa.me/27663621868"
+            ]
+          },
+          {
+            "@type": "Product",
+            "name": "Chicken Pie",
+            "image": "/piephone1.jpeg",
+            "description": "Chicken pie baked fresh daily.",
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "ZAR",
+              "price": "30",
+              "availability": "https://schema.org/InStock"
+            }
+          },
+          {
+            "@type": "Product",
+            "name": "Beef Pie",
+            "image": "/piephoto1view3.jpeg",
+            "description": "Beef pie baked fresh daily.",
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "ZAR",
+              "price": "40",
+              "availability": "https://schema.org/InStock"
+            }
+          }
+        ]
+      }
+    </script>
   </head>
 
   <body>
