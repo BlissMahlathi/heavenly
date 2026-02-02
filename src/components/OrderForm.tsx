@@ -101,7 +101,7 @@ const sendWhatsAppNotification = (order: {
   customer_amount: number | null;
   calculated_change: number | null;
   special_notes: string | null;
-}) => {
+}): string => {
   // Your admin WhatsApp number (replace with actual number, e.g., '27663621868' for +27 66 362 1868)
   const adminWhatsAppNumber = "27663621868"; // Change this to your actual number
 
@@ -158,11 +158,21 @@ ${changeInfo}
 
 ${order.special_notes ? `📝 Notes: ${order.special_notes}` : ""}`;
 
-  // Open WhatsApp with pre-filled message
-  const whatsappUrl = `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(
+  return `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(
     message,
   )}`;
-  window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+};
+
+const openWhatsAppUrl = (url: string) => {
+  try {
+    const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+    if (!newWindow) {
+      window.location.href = url;
+    }
+  } catch (error) {
+    console.error("WhatsApp open failed", error);
+    window.location.href = url;
+  }
 };
 
 // Function to send notification to admin
@@ -264,6 +274,7 @@ export const OrderForm = () => {
   const [thankYouInfo, setThankYouInfo] = useState<{
     orderNumber: string;
     total: number;
+    whatsappUrl: string;
   } | null>(null);
   const [pendingOrderData, setPendingOrderData] = useState<{
     customer_name: string;
@@ -431,19 +442,24 @@ export const OrderForm = () => {
 
       if (error) throw error;
 
-      // Send notification to admin database
-      if (newOrder) {
-        await sendAdminNotification(newOrder);
-
-        // Send WhatsApp notification
-        sendWhatsAppNotification(newOrder);
-      }
-
-      // Show order number to customer
       const orderNumber =
         (newOrder as OrderResponse)?.order_number ||
         newOrder?.id.slice(0, 8).toUpperCase() ||
         "";
+
+      // Send notification to admin database
+      if (newOrder) {
+        await sendAdminNotification(newOrder);
+
+        const whatsappUrl = sendWhatsAppNotification(newOrder);
+        openWhatsAppUrl(whatsappUrl);
+
+        setThankYouInfo({
+          orderNumber,
+          total: pendingOrderData.total_price,
+          whatsappUrl,
+        });
+      }
 
       toast.success("Order placed successfully!", {
         description: `Order #${orderNumber} - ${
@@ -1216,6 +1232,17 @@ export const OrderForm = () => {
                 </div>
 
                 <DialogFooter className="sm:justify-center">
+                  {thankYouInfo?.whatsappUrl && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="lg"
+                      className="w-full sm:w-auto"
+                      onClick={() => openWhatsAppUrl(thankYouInfo.whatsappUrl)}
+                    >
+                      Send to Seller on WhatsApp
+                    </Button>
+                  )}
                   <Button
                     type="button"
                     size="lg"
