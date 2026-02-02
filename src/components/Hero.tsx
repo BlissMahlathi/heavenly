@@ -55,7 +55,7 @@ export const Hero = () => {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
-                onClick={scrollToOrder}
+                onClick={scrollToMenu}
                 size="lg"
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >

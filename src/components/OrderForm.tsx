@@ -23,9 +23,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
+import { DottedGlowBackground } from "@/components/ui/dotted-glow-background";
 
 const PIE_PRICE = 30;
 const TRANSFER_FEE = 2;
@@ -252,6 +261,10 @@ export const OrderForm = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [changeNeeded, setChangeNeeded] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [thankYouInfo, setThankYouInfo] = useState<{
+    orderNumber: string;
+    total: number;
+  } | null>(null);
   const [pendingOrderData, setPendingOrderData] = useState<{
     customer_name: string;
     customer_phone: string;
@@ -439,6 +452,11 @@ export const OrderForm = () => {
           pendingOrderData.total_price,
         )}. Check WhatsApp for confirmation!`,
         duration: 6000,
+      });
+
+      setThankYouInfo({
+        orderNumber,
+        total: pendingOrderData.total_price,
       });
 
       // Reset form and close dialog
@@ -1150,6 +1168,67 @@ export const OrderForm = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <Dialog
+          open={Boolean(thankYouInfo)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setThankYouInfo(null);
+            }
+          }}
+        >
+          <DialogContent className="max-w-md border-none bg-transparent shadow-none">
+            <div className="relative overflow-hidden rounded-[28px] border border-white/20 bg-white/95 p-6 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/95 dark:ring-white/10">
+              <DottedGlowBackground
+                className="opacity-90"
+                gap={10}
+                radius={1.6}
+                backgroundOpacity={0.5}
+                speedMin={0.4}
+                speedMax={1.4}
+                speedScale={1}
+              />
+
+              <div className="relative z-10 space-y-4">
+                <DialogHeader className="space-y-2 text-center">
+                  <DialogTitle className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                    Thank you for shopping with us!
+                  </DialogTitle>
+                  <DialogDescription className="text-sm sm:text-base text-muted-foreground">
+                    {thankYouInfo?.orderNumber
+                      ? `Order #${thankYouInfo.orderNumber} is being prepared. We will confirm on WhatsApp shortly.`
+                      : "We will confirm on WhatsApp shortly."}
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm font-semibold">
+                  <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+                    Order total: R{formatCurrency(thankYouInfo?.total ?? 0)}
+                  </span>
+                  <span className="rounded-full bg-secondary/10 px-3 py-1 text-secondary">
+                    Fresh pies on the way
+                  </span>
+                </div>
+
+                <div className="rounded-2xl border border-primary/10 bg-primary/5 px-4 py-3 text-center text-sm text-muted-foreground">
+                  Want to tweak your order? Reply to our WhatsApp and we will
+                  adjust it for you.
+                </div>
+
+                <DialogFooter className="sm:justify-center">
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="w-full sm:w-auto bg-gradient-to-r from-primary via-accent to-secondary"
+                    onClick={() => setThankYouInfo(null)}
+                  >
+                    Close
+                  </Button>
+                </DialogFooter>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );
