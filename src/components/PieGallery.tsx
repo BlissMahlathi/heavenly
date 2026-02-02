@@ -213,7 +213,7 @@ export const PieGallery = () => {
   };
 
   return (
-    <section className="relative py-20 overflow-hidden">
+    <section id="menu" className="relative py-20 overflow-hidden">
       <div
         className="absolute inset-0 bg-cover bg-center bg-fixed"
         style={{ backgroundImage: "url(/piephoto1view3.jpeg)" }}

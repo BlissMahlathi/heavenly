@@ -8,6 +8,10 @@ export const Hero = () => {
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const scrollToMenu = () => {
+    document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section className="relative overflow-hidden">
       <div
@@ -58,7 +62,7 @@ export const Hero = () => {
                 Start Order
               </Button>
               <Button
-                onClick={scrollToOrder}
+                onClick={scrollToMenu}
                 size="lg"
                 variant="outline"
                 className="border-primary/40 text-primary hover:bg-primary/10"
