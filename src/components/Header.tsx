@@ -1,24 +1,11 @@
-import { Phone, Mail, Menu, X, LogIn, ShoppingCart } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Phone, Mail, Menu, X, LogIn } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const handleCartUpdate = (event: Event) => {
-      const detail = (event as CustomEvent).detail as
-        | { count: number }
-        | undefined;
-      if (detail) setCartCount(detail.count);
-    };
-    window.addEventListener("cart:count-updated", handleCartUpdate);
-    return () =>
-      window.removeEventListener("cart:count-updated", handleCartUpdate);
-  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-border shadow-sm">
@@ -66,21 +53,6 @@ export const Header = () => {
                 renoldamaenetja7@gmail.com
               </span>
             </a>
-            <button
-              onClick={() => {
-                const section = document.getElementById("order-section");
-                section?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="relative p-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
-              aria-label="View cart"
-            >
-              <ShoppingCart className="h-5 w-5 text-primary" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center h-5 w-5 rounded-full bg-red-500 text-white text-[10px] font-bold shadow-lg animate-bounce">
-                  {cartCount > 99 ? "99+" : cartCount}
-                </span>
-              )}
-            </button>
             <Button
               onClick={() => navigate("/auth")}
               variant="default"
@@ -92,36 +64,19 @@ export const Header = () => {
             </Button>
           </div>
 
-          {/* Mobile Cart + Menu */}
-          <div className="flex items-center gap-2 lg:hidden">
-            <button
-              onClick={() => {
-                const section = document.getElementById("order-section");
-                section?.scrollIntoView({ behavior: "smooth" });
-              }}
-              className="relative p-2 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors"
-              aria-label="View cart"
-            >
-              <ShoppingCart className="h-5 w-5 text-primary" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 flex items-center justify-center h-5 w-5 rounded-full bg-red-500 text-white text-[10px] font-bold shadow-lg animate-bounce">
-                  {cartCount > 99 ? "99+" : cartCount}
-                </span>
-              )}
-            </button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-9 w-9 sm:h-10 sm:w-10"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? (
-                <X className="h-5 w-5 sm:h-6 sm:w-6" />
-              ) : (
-                <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
-              )}
-            </Button>
-          </div>
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden h-9 w-9 sm:h-10 sm:w-10"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5 sm:h-6 sm:w-6" />
+            ) : (
+              <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
+            )}
+          </Button>
         </div>
 
         {/* Mobile Menu */}

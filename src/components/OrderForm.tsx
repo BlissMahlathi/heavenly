@@ -159,7 +159,7 @@ ${changeInfo}
 ${order.special_notes ? `📝 Notes: ${order.special_notes}` : ""}
 
 🔗 Manage this order:
-${window.location.origin}/admin`;
+${window.location.origin}/auth`;
 
   return `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(
     message,

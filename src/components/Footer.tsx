@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Phone,
   Mail,
@@ -10,6 +11,20 @@ import {
 } from "lucide-react";
 
 export const Footer = () => {
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    const handleCartUpdate = (event: Event) => {
+      const detail = (event as CustomEvent).detail as
+        | { count: number }
+        | undefined;
+      if (detail) setCartCount(detail.count);
+    };
+    window.addEventListener("cart:count-updated", handleCartUpdate);
+    return () =>
+      window.removeEventListener("cart:count-updated", handleCartUpdate);
+  }, []);
+
   return (
     <footer className="relative border-t-2 border-primary/30 mt-10 sm:mt-16 lg:mt-20 overflow-hidden">
       <a
@@ -19,6 +34,11 @@ export const Footer = () => {
         title="Go to cart"
       >
         <ShoppingCart className="h-6 w-6" />
+        {cartCount > 0 && (
+          <span className="absolute -top-1 -right-1 flex items-center justify-center h-5 w-5 min-w-5 rounded-full bg-red-500 text-white text-[10px] font-bold shadow-lg ring-2 ring-white animate-bounce">
+            {cartCount > 99 ? "99+" : cartCount}
+          </span>
+        )}
       </a>
       {/* Background Image with Overlay */}
       <div
