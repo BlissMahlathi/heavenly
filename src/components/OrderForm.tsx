@@ -305,15 +305,6 @@ export const OrderForm = () => {
     notes: "",
   });
 
-  // Broadcast cart count to other components (e.g. Header badge)
-  useEffect(() => {
-    window.dispatchEvent(
-      new CustomEvent("cart:count-updated", {
-        detail: { count: totalQuantity },
-      }),
-    );
-  }, [cart, totalQuantity]);
-
   useEffect(() => {
     const handleExternalAdd = (event: Event) => {
       const detail = (event as CustomEvent).detail as
@@ -349,6 +340,16 @@ export const OrderForm = () => {
   const deliveryFee = isDelivery && cart.length > 0 ? DELIVERY_FEE : 0;
   const finalTotal = cartTotal + transferFee + deliveryFee;
   const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Broadcast cart count to other components (e.g. Header badge)
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent("cart:count-updated", {
+        detail: { count: totalQuantity },
+      }),
+    );
+  }, [cart, totalQuantity]);
+
   const calculatedChange =
     changeNeeded && formData.customerAmount
       ? Number(formData.customerAmount) - finalTotal
