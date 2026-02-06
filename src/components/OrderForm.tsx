@@ -156,7 +156,10 @@ ${addressLine}
   }
 ${changeInfo}
 
-${order.special_notes ? `📝 Notes: ${order.special_notes}` : ""}`;
+${order.special_notes ? `📝 Notes: ${order.special_notes}` : ""}
+
+🔗 Manage this order:
+${window.location.origin}/admin`;
 
   return `https://wa.me/${adminWhatsAppNumber}?text=${encodeURIComponent(
     message,
@@ -301,6 +304,15 @@ export const OrderForm = () => {
     customerAmount: "",
     notes: "",
   });
+
+  // Broadcast cart count to other components (e.g. Header badge)
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent("cart:count-updated", {
+        detail: { count: totalQuantity },
+      }),
+    );
+  }, [cart, totalQuantity]);
 
   useEffect(() => {
     const handleExternalAdd = (event: Event) => {
