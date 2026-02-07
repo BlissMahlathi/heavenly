@@ -54,12 +54,13 @@ type MenuItem = {
   spicy?: boolean;
 };
 
-type FridayDeal = {
+type SpecialDeal = {
   id: string;
   title: string;
   description: string;
   items: { flavor: FlavorName; quantity: number }[];
   badge: string;
+  priceLabel?: string;
 };
 
 const menuItems: MenuItem[] = [
@@ -171,30 +172,57 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-const fridayDeals: FridayDeal[] = [
+const dailyPremiumSpecials: SpecialDeal[] = [
   {
-    id: "deal-2chicken-1beef",
-    title: "2 Chicken + 1 Beef with a free drink",
-    description: "Classic combo with a free drink and small chips.",
+    id: "daily-combo-1",
+    title: "Combo 1: 3 Chicken pies + Russian roll",
+    description: "Includes side chips and a drink.",
+    items: [
+      { flavor: "Chicken Mild", quantity: 3 },
+      { flavor: "Russian Roll", quantity: 1 },
+      { flavor: "Small Chips", quantity: 1 },
+    ],
+    badge: "Daily premium special",
+    priceLabel: "R199.99",
+  },
+  {
+    id: "daily-combo-2",
+    title: "Combo 2: 2 Chicken + 1 Beef + Russian roll",
+    description: "Includes a drink and side chips.",
     items: [
       { flavor: "Chicken Mild", quantity: 2 },
       { flavor: "Beef Mild", quantity: 1 },
+      { flavor: "Russian Roll", quantity: 1 },
       { flavor: "Small Chips", quantity: 1 },
     ],
-    badge: "Combo favorite",
+    badge: "Daily premium special",
   },
   {
-    id: "deal-2beef-1chicken",
-    title: "2 Beef + 1 Chicken with a free drink",
-    description: "Big flavor with a free drink and small chips.",
+    id: "daily-combo-3",
+    title: "Combo 3: 2 Beef + 1 Chicken + Russian roll",
+    description: "Includes a drink and side chips.",
     items: [
       { flavor: "Beef Mild", quantity: 2 },
       { flavor: "Chicken Mild", quantity: 1 },
+      { flavor: "Russian Roll", quantity: 1 },
       { flavor: "Small Chips", quantity: 1 },
     ],
-    badge: "Beef lovers",
+    badge: "Daily premium special",
   },
 ];
+
+const fridaySpecial: SpecialDeal = {
+  id: "friday-special-2beef-1chicken",
+  title: "Heavenly Friday Special: 2 Beef + 1 Chicken",
+  description: "Free drink and side chips included.",
+  items: [
+    { flavor: "Beef Mild", quantity: 2 },
+    { flavor: "Chicken Mild", quantity: 1 },
+    { flavor: "Small Chips", quantity: 1 },
+  ],
+  badge: "Friday only",
+  priceLabel: "R89.00",
+};
 
 const dispatchAddToCart = (flavor: FlavorName, quantity = 1) => {
   window.dispatchEvent(
@@ -207,7 +235,7 @@ export const PieGallery = () => {
   const [selectedQuantity, setSelectedQuantity] = useState(1);
   const [specialsOpen, setSpecialsOpen] = useState(false);
 
-  const handleAddDeal = (deal: FridayDeal) => {
+  const handleAddDeal = (deal: SpecialDeal) => {
     deal.items.forEach((item) => dispatchAddToCart(item.flavor, item.quantity));
     setSpecialsOpen(false);
   };
@@ -246,7 +274,7 @@ export const PieGallery = () => {
               <CardHeader className="flex flex-col gap-3">
                 <div className="flex items-center justify-center gap-3 text-2xl md:text-3xl font-extrabold">
                   <Sparkles className="h-7 w-7" />
-                  Friday Special Deals
+                  Daily Premium & Friday Specials
                   <Sparkles className="h-7 w-7" />
                 </div>
                 <div className="flex flex-col items-center gap-2">
@@ -254,8 +282,8 @@ export const PieGallery = () => {
                     Tap to view deals
                   </Badge>
                   <CardDescription className="text-white/90 text-base md:text-lg">
-                    Limited offers every Friday. Add a deal to your cart and
-                    customize in the order form.
+                    Daily premium combos plus a Friday-only deal. Add a special
+                    to your cart and customize in the order form.
                   </CardDescription>
                 </div>
               </CardHeader>
@@ -441,32 +469,78 @@ export const PieGallery = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-extrabold flex items-center gap-2">
               <BadgePercent className="h-6 w-6 text-primary" />
-              Friday Special Deals
+              Daily Premium & Friday Specials
             </DialogTitle>
             <DialogDescription className="text-base text-muted-foreground">
-              Deals run every Friday. Add a deal to your cart and customize in
-              the order form.
+              Daily premium combos are available every day. The Friday special
+              runs every Friday. Add a deal to your cart and customize in the
+              order form.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
-            {fridayDeals.map((deal) => (
-              <Card key={deal.id} className="border border-border">
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-foreground">
+                Daily Premium Specials
+              </h3>
+              {dailyPremiumSpecials.map((deal) => (
+                <Card key={deal.id} className="border border-border">
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div className="space-y-2">
+                        <h4 className="text-lg font-bold text-foreground">
+                          {deal.title}
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {deal.description}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                          <Info className="h-4 w-4" />
+                          <span>{deal.badge}</span>
+                          {deal.priceLabel && (
+                            <Badge className="bg-primary/10 text-primary border border-primary/20">
+                              {deal.priceLabel}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => handleAddDeal(deal)}
+                        className="shrink-0"
+                      >
+                        <ShoppingCart className="mr-2 h-4 w-4" />
+                        Add deal to cart
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-foreground">
+                Heavenly Friday Special
+              </h3>
+              <Card className="border border-border">
                 <CardContent className="p-4 md:p-6">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="space-y-2">
                       <h4 className="text-lg font-bold text-foreground">
-                        {deal.title}
+                        {fridaySpecial.title}
                       </h4>
                       <p className="text-sm text-muted-foreground">
-                        {deal.description}
+                        {fridaySpecial.description}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                         <Info className="h-4 w-4" />
-                        {deal.badge}
+                        <span>{fridaySpecial.badge}</span>
+                        {fridaySpecial.priceLabel && (
+                          <Badge className="bg-primary/10 text-primary border border-primary/20">
+                            {fridaySpecial.priceLabel}
+                          </Badge>
+                        )}
                       </div>
                     </div>
                     <Button
-                      onClick={() => handleAddDeal(deal)}
+                      onClick={() => handleAddDeal(fridaySpecial)}
                       className="shrink-0"
                     >
                       <ShoppingCart className="mr-2 h-4 w-4" />
@@ -475,7 +549,7 @@ export const PieGallery = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
