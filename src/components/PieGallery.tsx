@@ -183,7 +183,7 @@ const dailyPremiumSpecials: SpecialDeal[] = [
       { flavor: "Small Chips", quantity: 1 },
     ],
     badge: "Daily premium special",
-    priceLabel: "R199.99",
+    priceLabel: "R119.99",
   },
   {
     id: "daily-combo-2",
@@ -196,6 +196,7 @@ const dailyPremiumSpecials: SpecialDeal[] = [
       { flavor: "Small Chips", quantity: 1 },
     ],
     badge: "Daily premium special",
+    priceLabel: "R124.99",
   },
   {
     id: "daily-combo-3",
@@ -208,6 +209,7 @@ const dailyPremiumSpecials: SpecialDeal[] = [
       { flavor: "Small Chips", quantity: 1 },
     ],
     badge: "Daily premium special",
+    priceLabel: "R129.99",
   },
 ];
 
