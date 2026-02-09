@@ -172,44 +172,65 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-const dailyPremiumSpecials: SpecialDeal[] = [
+const valueCombos: SpecialDeal[] = [
   {
-    id: "daily-combo-1",
-    title: "Combo 1: 3 Chicken pies + Russian roll",
-    description: "Includes side chips and a drink.",
+    id: "value-combo-1",
+    title: "Value Combo: 3 Chicken pies + drink + side chips",
+    description: "All-day value combo.",
     items: [
       { flavor: "Chicken Mild", quantity: 3 },
-      { flavor: "Russian Roll", quantity: 1 },
       { flavor: "Small Chips", quantity: 1 },
     ],
-    badge: "Daily premium special",
-    priceLabel: "R119.99",
+    badge: "Value combo (all day)",
+    priceLabel: "R99.99",
   },
   {
-    id: "daily-combo-2",
-    title: "Combo 2: 2 Chicken + 1 Beef + Russian roll",
-    description: "Includes a drink and side chips.",
+    id: "value-combo-2",
+    title: "Value Combo: 2 Chicken + 1 Beef + drink + side chips",
+    description: "All-day value combo.",
     items: [
       { flavor: "Chicken Mild", quantity: 2 },
       { flavor: "Beef Mild", quantity: 1 },
-      { flavor: "Russian Roll", quantity: 1 },
       { flavor: "Small Chips", quantity: 1 },
     ],
-    badge: "Daily premium special",
-    priceLabel: "R124.99",
+    badge: "Value combo (all day)",
+    priceLabel: "R109.99",
   },
   {
-    id: "daily-combo-3",
-    title: "Combo 3: 2 Beef + 1 Chicken + Russian roll",
-    description: "Includes a drink and side chips.",
+    id: "value-combo-3",
+    title: "Value Combo: 3 Beef pies + drink + side chips",
+    description: "All-day value combo.",
     items: [
-      { flavor: "Beef Mild", quantity: 2 },
-      { flavor: "Chicken Mild", quantity: 1 },
-      { flavor: "Russian Roll", quantity: 1 },
+      { flavor: "Beef Mild", quantity: 3 },
       { flavor: "Small Chips", quantity: 1 },
     ],
-    badge: "Daily premium special",
+    badge: "Value combo (all day)",
     priceLabel: "R129.99",
+  },
+];
+
+const lunchBoxSpecials: SpecialDeal[] = [
+  {
+    id: "lunch-box-chicken",
+    title: "Lunch Box: 1 Chicken pie + drink + side chips",
+    description: "Everyday special from 8:00 AM to 1:30 PM.",
+    items: [
+      { flavor: "Chicken Mild", quantity: 1 },
+      { flavor: "Small Chips", quantity: 1 },
+    ],
+    badge: "Lunch box (8:00 AM - 1:30 PM)",
+    priceLabel: "R49.99",
+  },
+  {
+    id: "lunch-box-beef",
+    title: "Lunch Box: 1 Beef pie + drink + small chips",
+    description: "Everyday special from 8:00 AM to 1:30 PM.",
+    items: [
+      { flavor: "Beef Mild", quantity: 1 },
+      { flavor: "Small Chips", quantity: 1 },
+    ],
+    badge: "Lunch box (8:00 AM - 1:30 PM)",
+    priceLabel: "R59.99",
   },
 ];
 
@@ -276,7 +297,7 @@ export const PieGallery = () => {
               <CardHeader className="flex flex-col gap-3">
                 <div className="flex items-center justify-center gap-3 text-2xl md:text-3xl font-extrabold">
                   <Sparkles className="h-7 w-7" />
-                  Daily Premium & Friday Specials
+                  Value Combos, Lunch Box & Friday Specials
                   <Sparkles className="h-7 w-7" />
                 </div>
                 <div className="flex flex-col items-center gap-2">
@@ -284,8 +305,9 @@ export const PieGallery = () => {
                     Tap to view deals
                   </Badge>
                   <CardDescription className="text-white/90 text-base md:text-lg">
-                    Daily premium combos plus a Friday-only deal. Add a special
-                    to your cart and customize in the order form.
+                    Value combos all day, lunch box specials 8:00 AM - 1:30 PM,
+                    plus a Friday-only deal. Add a special to your cart and
+                    customize in the order form.
                   </CardDescription>
                 </div>
               </CardHeader>
@@ -471,20 +493,57 @@ export const PieGallery = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl font-extrabold flex items-center gap-2">
               <BadgePercent className="h-6 w-6 text-primary" />
-              Daily Premium & Friday Specials
+              Value Combos, Lunch Box & Friday Specials
             </DialogTitle>
             <DialogDescription className="text-base text-muted-foreground">
-              Daily premium combos are available every day. The Friday special
-              runs every Friday. Add a deal to your cart and customize in the
-              order form.
+              Value combos are available all day. Lunch box specials run every
+              day from 8:00 AM to 1:30 PM. The Friday special runs every Friday.
+              Add a deal to your cart and customize in the order form.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
             <div className="space-y-3">
               <h3 className="text-lg font-semibold text-foreground">
-                Daily Premium Specials
+                Value Combos (All Day)
               </h3>
-              {dailyPremiumSpecials.map((deal) => (
+              {valueCombos.map((deal) => (
+                <Card key={deal.id} className="border border-border">
+                  <CardContent className="p-4 md:p-6">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                      <div className="space-y-2">
+                        <h4 className="text-lg font-bold text-foreground">
+                          {deal.title}
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          {deal.description}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                          <Info className="h-4 w-4" />
+                          <span>{deal.badge}</span>
+                          {deal.priceLabel && (
+                            <Badge className="bg-primary/10 text-primary border border-primary/20">
+                              {deal.priceLabel}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => handleAddDeal(deal)}
+                        className="shrink-0"
+                      >
+                        <ShoppingCart className="mr-2 h-4 w-4" />
+                        Add deal to cart
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-foreground">
+                Lunch Box Everyday Special (8:00 AM - 1:30 PM)
+              </h3>
+              {lunchBoxSpecials.map((deal) => (
                 <Card key={deal.id} className="border border-border">
                   <CardContent className="p-4 md:p-6">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
