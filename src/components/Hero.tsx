@@ -12,6 +12,14 @@ export const Hero = () => {
     document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const addSignaturePieToCart = () => {
+    window.dispatchEvent(
+      new CustomEvent("pie:add-to-cart", {
+        detail: { flavor: "Chicken Mild", quantity: 1 },
+      }),
+    );
+  };
+
   return (
     <section className="relative overflow-hidden">
       <div
@@ -126,7 +134,11 @@ export const Hero = () => {
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <Button onClick={scrollToOrder} size="lg" className="flex-1">
+                  <Button
+                    onClick={addSignaturePieToCart}
+                    size="lg"
+                    className="flex-1"
+                  >
                     Add to Cart
                   </Button>
                   <Button

@@ -467,7 +467,7 @@ export const PieGallery = () => {
       </Dialog>
 
       <Dialog open={specialsOpen} onOpenChange={setSpecialsOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl w-[95vw] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-extrabold flex items-center gap-2">
               <BadgePercent className="h-6 w-6 text-primary" />
