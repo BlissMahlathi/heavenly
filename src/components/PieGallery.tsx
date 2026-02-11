@@ -175,36 +175,43 @@ const menuItems: MenuItem[] = [
 const valueCombos: SpecialDeal[] = [
   {
     id: "value-combo-1",
-    title: "Value Combo: 3 Chicken pies + drink + side chips",
-    description: "All-day value combo.",
+    title:
+      "Daily Premium Special: 3 Chicken pies + side chips + drink + Russian",
+    description: "All-day daily premium special.",
     items: [
       { flavor: "Chicken Mild", quantity: 3 },
       { flavor: "Small Chips", quantity: 1 },
+      { flavor: "Russian Roll", quantity: 1 },
     ],
-    badge: "Value combo (all day)",
-    priceLabel: "R99.99",
+    badge: "Daily premium special (all day)",
+    priceLabel: "R119.99",
   },
   {
     id: "value-combo-2",
-    title: "Value Combo: 2 Chicken + 1 Beef + drink + side chips",
-    description: "All-day value combo.",
+    title:
+      "Daily Premium Special: 2 Chicken + 1 Beef + side chips + drink + Russian",
+    description: "All-day daily premium special.",
     items: [
       { flavor: "Chicken Mild", quantity: 2 },
       { flavor: "Beef Mild", quantity: 1 },
       { flavor: "Small Chips", quantity: 1 },
+      { flavor: "Russian Roll", quantity: 1 },
     ],
-    badge: "Value combo (all day)",
-    priceLabel: "R109.99",
+    badge: "Daily premium special (all day)",
+    priceLabel: "R124.99",
   },
   {
     id: "value-combo-3",
-    title: "Value Combo: 3 Beef pies + drink + side chips",
-    description: "All-day value combo.",
+    title:
+      "Daily Premium Special: 2 Beef + 1 Chicken + side chips + drink + Russian",
+    description: "All-day daily premium special.",
     items: [
-      { flavor: "Beef Mild", quantity: 3 },
+      { flavor: "Beef Mild", quantity: 2 },
+      { flavor: "Chicken Mild", quantity: 1 },
       { flavor: "Small Chips", quantity: 1 },
+      { flavor: "Russian Roll", quantity: 1 },
     ],
-    badge: "Value combo (all day)",
+    badge: "Daily premium special (all day)",
     priceLabel: "R129.99",
   },
 ];
