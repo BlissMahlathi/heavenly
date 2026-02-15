@@ -52,6 +52,7 @@ type MenuItem = {
   tag: string;
   isNew?: boolean;
   spicy?: boolean;
+  available?: boolean;
 };
 
 type SpecialDeal = {
@@ -121,6 +122,7 @@ const menuItems: MenuItem[] = [
     icon: Drumstick,
     tag: "Chicken",
     isNew: true,
+    available: false,
   },
   {
     name: "Cheesy Chicken Pie",
@@ -145,6 +147,7 @@ const menuItems: MenuItem[] = [
     icon: Star,
     tag: "Sides",
     isNew: true,
+    available: false,
   },
   {
     name: "Russian Roll",
@@ -157,6 +160,7 @@ const menuItems: MenuItem[] = [
     icon: Star,
     tag: "Sides",
     isNew: true,
+    available: false,
   },
   {
     name: "Wors Rolls",
@@ -169,6 +173,7 @@ const menuItems: MenuItem[] = [
     icon: Star,
     tag: "Sides",
     isNew: true,
+    available: false,
   },
 ];
 
@@ -330,12 +335,19 @@ export const PieGallery = () => {
                 key={item.name}
                 type="button"
                 onClick={() => {
+                  if (item.available === false) return;
                   setSelectedItem(item);
                   setSelectedQuantity(1);
                 }}
                 className="text-left"
               >
-                <Card className="group overflow-hidden border-2 border-white/20 bg-white/10 backdrop-blur-sm hover:border-white/40 hover:-translate-y-1 transition-all duration-300">
+                <Card
+                  className={`group overflow-hidden border-2 border-white/20 bg-white/10 backdrop-blur-sm transition-all duration-300 ${
+                    item.available === false
+                      ? "opacity-70"
+                      : "hover:border-white/40 hover:-translate-y-1"
+                  }`}
+                >
                   <CardContent className="p-0">
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <img
@@ -381,6 +393,13 @@ export const PieGallery = () => {
                           {item.categoryLabel}
                         </span>
                       </div>
+                      {item.available === false && (
+                        <div className="absolute top-3 right-3">
+                          <span className="bg-red-600 text-white text-xs font-extrabold px-3 py-1 uppercase rounded shadow">
+                            Out of stock
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <div className="p-4">
                       <p className="text-sm text-gray-200 line-clamp-2">
@@ -389,7 +408,9 @@ export const PieGallery = () => {
                       <div className="mt-4 flex items-center justify-between text-white/80 text-sm">
                         <span className="flex items-center gap-2">
                           <ShoppingCart className="h-4 w-4" />
-                          Tap for details
+                          {item.available === false
+                            ? "Unavailable"
+                            : "Tap for details"}
                         </span>
                         <span className="font-semibold text-white">
                           R{item.price.toFixed(2)}
