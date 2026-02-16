@@ -58,7 +58,7 @@ export default function AdminDashboard() {
         },
         () => {
           fetchOrders();
-        }
+        },
       )
       .subscribe();
 
@@ -83,7 +83,7 @@ export default function AdminDashboard() {
 
   const updateOrderStatus = async (
     orderId: string,
-    status: "accepted" | "cancelled"
+    status: "accepted" | "cancelled",
   ) => {
     try {
       const { error } = await supabase
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
 
     return `https://wa.me/${order.customer_phone.replace(
       /\s/g,
-      ""
+      "",
     )}?text=${encodeURIComponent(message)}`;
   };
 
@@ -128,6 +128,55 @@ export default function AdminDashboard() {
     if (filter === "all") return true;
     return order.status === filter;
   });
+
+  const isSameDay = (a: Date, b: Date) =>
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
+
+  const getDayLabel = (createdAt: string) => {
+    const orderDate = new Date(createdAt);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+
+    if (isSameDay(orderDate, today)) return "Today";
+    if (isSameDay(orderDate, yesterday)) return "Yesterday";
+
+    const diffDays = Math.floor(
+      (today.setHours(0, 0, 0, 0) - new Date(orderDate).setHours(0, 0, 0, 0)) /
+        (1000 * 60 * 60 * 24),
+    );
+
+    if (diffDays >= 0 && diffDays < 7) {
+      return orderDate.toLocaleDateString("en-US", { weekday: "long" });
+    }
+
+    return orderDate.toLocaleDateString("en-US", {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const groupedOrders = filteredOrders.reduce(
+    (groups, order) => {
+      const label = getDayLabel(order.created_at);
+      if (!groups[label]) {
+        groups[label] = [];
+      }
+      groups[label].push(order);
+      return groups;
+    },
+    {} as Record<string, Order[]>,
+  );
+
+  const orderedGroupEntries = Object.entries(groupedOrders).sort(
+    ([, a], [, b]) =>
+      new Date(b[0]?.created_at || 0).getTime() -
+      new Date(a[0]?.created_at || 0).getTime(),
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -184,153 +233,167 @@ export default function AdminDashboard() {
                 </p>
               </div>
             ) : (
-              filteredOrders.map((order) => (
-                <Card
-                  key={order.id}
-                  className="border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow"
-                >
-                  <CardHeader className="p-3 sm:p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                          <Badge
-                            variant="outline"
-                            className="font-mono text-[10px] sm:text-xs"
-                          >
-                            #{order.id.slice(0, 8).toUpperCase()}
-                          </Badge>
-                          <Badge className={getStatusColor(order.status)}>
-                            {order.status}
-                          </Badge>
+              orderedGroupEntries.map(([label, group]) => (
+                <div key={label} className="space-y-3 sm:space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-px flex-1 bg-border" />
+                    <span className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                      {label} · {group.length}
+                    </span>
+                    <div className="h-px flex-1 bg-border" />
+                  </div>
+                  {group.map((order) => (
+                    <Card
+                      key={order.id}
+                      className="border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow"
+                    >
+                      <CardHeader className="p-3 sm:p-6">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                              <Badge
+                                variant="outline"
+                                className="font-mono text-[10px] sm:text-xs"
+                              >
+                                #{order.id.slice(0, 8).toUpperCase()}
+                              </Badge>
+                              <Badge className={getStatusColor(order.status)}>
+                                {order.status}
+                              </Badge>
+                            </div>
+                            <CardTitle className="text-lg sm:text-xl font-bold">
+                              {order.customer_name}
+                            </CardTitle>
+                            <CardDescription className="flex items-center gap-2 mt-1 text-xs sm:text-sm">
+                              <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                              {new Date(order.created_at).toLocaleString()}
+                            </CardDescription>
+                          </div>
                         </div>
-                        <CardTitle className="text-lg sm:text-xl font-bold">
-                          {order.customer_name}
-                        </CardTitle>
-                        <CardDescription className="flex items-center gap-2 mt-1 text-xs sm:text-sm">
-                          <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-                          {new Date(order.created_at).toLocaleString()}
-                        </CardDescription>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-6 pt-0">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-xs sm:text-sm">
-                          <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
-                          <span className="font-medium break-all">
-                            {order.customer_phone}
-                          </span>
+                      </CardHeader>
+                      <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-6 pt-0">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-xs sm:text-sm">
+                              <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
+                              <span className="font-medium break-all">
+                                {order.customer_phone}
+                              </span>
+                            </div>
+                            {order.customer_email && (
+                              <div className="text-xs sm:text-sm text-muted-foreground break-all">
+                                Email: {order.customer_email}
+                              </div>
+                            )}
+                            <div className="flex items-start gap-2 text-xs sm:text-sm">
+                              <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                              <span>{order.delivery_address}</span>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 bg-muted/50 p-3 sm:p-4 rounded-lg">
+                            <div className="text-xs sm:text-sm flex justify-between">
+                              <span className="text-muted-foreground">
+                                Quantity:
+                              </span>
+                              <span className="font-semibold">
+                                {order.quantity} pie(s)
+                              </span>
+                            </div>
+                            <div className="text-xs sm:text-sm flex justify-between">
+                              <span className="text-muted-foreground">
+                                Total:
+                              </span>
+                              <span className="font-bold text-base sm:text-lg text-primary">
+                                R{order.total_price}
+                              </span>
+                            </div>
+                            <div className="text-xs sm:text-sm flex justify-between">
+                              <span className="text-muted-foreground">
+                                Payment:
+                              </span>
+                              <span className="font-semibold">
+                                {order.payment_method.toUpperCase()}
+                              </span>
+                            </div>
+                            {order.payment_method === "cash" &&
+                              order.change_needed &&
+                              order.calculated_change !== null && (
+                                <div className="bg-accent/20 p-2 rounded border border-accent/40 mt-2">
+                                  <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+                                    <Coins className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent-foreground flex-shrink-0" />
+                                    <span className="text-muted-foreground">
+                                      Customer pays:
+                                    </span>
+                                    <span className="font-semibold">
+                                      R{order.customer_amount}
+                                    </span>
+                                  </div>
+                                  <div className="text-xs sm:text-sm font-bold text-accent-foreground mt-1">
+                                    Change: R
+                                    {order.calculated_change.toFixed(2)}
+                                  </div>
+                                </div>
+                              )}
+                          </div>
                         </div>
-                        {order.customer_email && (
-                          <div className="text-xs sm:text-sm text-muted-foreground break-all">
-                            Email: {order.customer_email}
+
+                        {order.special_notes && (
+                          <div className="bg-accent/10 p-2.5 sm:p-3 rounded-lg border border-accent/30">
+                            <div className="text-xs sm:text-sm font-semibold mb-1">
+                              Special Instructions:
+                            </div>
+                            <div className="text-xs sm:text-sm text-muted-foreground">
+                              {order.special_notes}
+                            </div>
                           </div>
                         )}
-                        <div className="flex items-start gap-2 text-xs sm:text-sm">
-                          <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                          <span>{order.delivery_address}</span>
-                        </div>
-                      </div>
 
-                      <div className="space-y-2 bg-muted/50 p-3 sm:p-4 rounded-lg">
-                        <div className="text-xs sm:text-sm flex justify-between">
-                          <span className="text-muted-foreground">
-                            Quantity:
-                          </span>
-                          <span className="font-semibold">
-                            {order.quantity} pie(s)
-                          </span>
-                        </div>
-                        <div className="text-xs sm:text-sm flex justify-between">
-                          <span className="text-muted-foreground">Total:</span>
-                          <span className="font-bold text-base sm:text-lg text-primary">
-                            R{order.total_price}
-                          </span>
-                        </div>
-                        <div className="text-xs sm:text-sm flex justify-between">
-                          <span className="text-muted-foreground">
-                            Payment:
-                          </span>
-                          <span className="font-semibold">
-                            {order.payment_method.toUpperCase()}
-                          </span>
-                        </div>
-                        {order.payment_method === "cash" &&
-                          order.change_needed &&
-                          order.calculated_change !== null && (
-                            <div className="bg-accent/20 p-2 rounded border border-accent/40 mt-2">
-                              <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                                <Coins className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-accent-foreground flex-shrink-0" />
-                                <span className="text-muted-foreground">
-                                  Customer pays:
-                                </span>
-                                <span className="font-semibold">
-                                  R{order.customer_amount}
-                                </span>
-                              </div>
-                              <div className="text-xs sm:text-sm font-bold text-accent-foreground mt-1">
-                                Change: R{order.calculated_change.toFixed(2)}
-                              </div>
-                            </div>
+                        <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                          {order.status === "pending" && (
+                            <>
+                              <Button
+                                onClick={() =>
+                                  updateOrderStatus(order.id, "accepted")
+                                }
+                                className="bg-success hover:bg-success/90 text-success-foreground flex-1 text-sm sm:text-base h-10 sm:h-11"
+                              >
+                                <CheckCircle className="mr-1.5 sm:mr-2 h-4 w-4" />
+                                Order Received
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                onClick={() =>
+                                  updateOrderStatus(order.id, "cancelled")
+                                }
+                                className="flex-1 text-sm sm:text-base h-10 sm:h-11"
+                              >
+                                <XCircle className="mr-1.5 sm:mr-2 h-4 w-4" />
+                                Mark Cancelled
+                              </Button>
+                            </>
                           )}
-                      </div>
-                    </div>
-
-                    {order.special_notes && (
-                      <div className="bg-accent/10 p-2.5 sm:p-3 rounded-lg border border-accent/30">
-                        <div className="text-xs sm:text-sm font-semibold mb-1">
-                          Special Instructions:
+                          {order.status === "accepted" && (
+                            <Button
+                              variant="outline"
+                              asChild
+                              className="w-full text-sm sm:text-base h-10 sm:h-11"
+                            >
+                              <a
+                                href={getWhatsAppLink(order)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <MessageCircle className="mr-1.5 sm:mr-2 h-4 w-4" />
+                                Send Follow-up on WhatsApp
+                              </a>
+                            </Button>
+                          )}
                         </div>
-                        <div className="text-xs sm:text-sm text-muted-foreground">
-                          {order.special_notes}
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex flex-col sm:flex-row gap-2 pt-2">
-                      {order.status === "pending" && (
-                        <>
-                          <Button
-                            onClick={() =>
-                              updateOrderStatus(order.id, "accepted")
-                            }
-                            className="bg-success hover:bg-success/90 text-success-foreground flex-1 text-sm sm:text-base h-10 sm:h-11"
-                          >
-                            <CheckCircle className="mr-1.5 sm:mr-2 h-4 w-4" />
-                            Order Received
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            onClick={() =>
-                              updateOrderStatus(order.id, "cancelled")
-                            }
-                            className="flex-1 text-sm sm:text-base h-10 sm:h-11"
-                          >
-                            <XCircle className="mr-1.5 sm:mr-2 h-4 w-4" />
-                            Mark Cancelled
-                          </Button>
-                        </>
-                      )}
-                      {order.status === "accepted" && (
-                        <Button
-                          variant="outline"
-                          asChild
-                          className="w-full text-sm sm:text-base h-10 sm:h-11"
-                        >
-                          <a
-                            href={getWhatsAppLink(order)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <MessageCircle className="mr-1.5 sm:mr-2 h-4 w-4" />
-                            Send Follow-up on WhatsApp
-                          </a>
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               ))
             )}
           </TabsContent>
