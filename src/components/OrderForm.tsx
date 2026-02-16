@@ -102,8 +102,8 @@ const sendWhatsAppNotification = (order: {
   calculated_change: number | null;
   special_notes: string | null;
 }): string => {
-  // Your admin WhatsApp number (replace with actual number, e.g., '27663621868' for +27 66 362 1868)
-  const adminWhatsAppNumber = "27663621868"; // Change this to your actual number
+  // Your admin WhatsApp number (replace with actual number, e.g., '27824332708' for +27 82 433 2708)
+  const adminWhatsAppNumber = "27824332708"; // Orders-only number
 
   const changeInfo = order.change_needed
     ? `Customer paying with: R${formatCurrency(
