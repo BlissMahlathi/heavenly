@@ -16,12 +16,12 @@ const App = () => {
   const [animateOut, setAnimateOut] = useState(false);
 
   useEffect(() => {
-    const exitTimer = window.setTimeout(() => setAnimateOut(true), 1600);
+    const exitTimer = window.setTimeout(() => setAnimateOut(true), 5000);
     const goodTimer = window.setTimeout(() => {
       setStage("good");
       setAnimateOut(false);
-    }, 2200);
-    const doneTimer = window.setTimeout(() => setStage("done"), 3600);
+    }, 5800);
+    const doneTimer = window.setTimeout(() => setStage("done"), 10800);
 
     return () => {
       window.clearTimeout(exitTimer);
