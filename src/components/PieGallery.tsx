@@ -122,7 +122,7 @@ const menuItems: MenuItem[] = [
     icon: Drumstick,
     tag: "Chicken",
     isNew: true,
-    available: false,
+    available: true,
   },
   {
     name: "Cheesy Chicken Pie",
@@ -147,7 +147,7 @@ const menuItems: MenuItem[] = [
     icon: Star,
     tag: "Sides",
     isNew: true,
-    available: false,
+    available: true,
   },
   {
     name: "Russian Roll",
@@ -160,7 +160,7 @@ const menuItems: MenuItem[] = [
     icon: Star,
     tag: "Sides",
     isNew: true,
-    available: false,
+    available: true,
   },
   {
     name: "Wors Rolls",
@@ -173,7 +173,7 @@ const menuItems: MenuItem[] = [
     icon: Star,
     tag: "Sides",
     isNew: true,
-    available: false,
+    available: true,
   },
 ];
 
